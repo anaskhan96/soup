@@ -19,7 +19,8 @@ func Get(url string) (string, error) {
 	return s, nil
 }
 
-/*func Prettify(r io.ReadCloser) (string, error) {
+/* Prettify() function to be looked at later
+func Prettify(r io.ReadCloser) (string, error) {
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
 		return "", err
@@ -35,4 +36,5 @@ func Get(url string) (string, error) {
 		mod += string(c)
 	}
 	return mod, nil
-}*/
+}
+*/
