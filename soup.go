@@ -14,7 +14,7 @@ func Make(url string) (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
-func Prettify(r io.ReadCloser) (string, error) {
+/*func Prettify(r io.ReadCloser) (string, error) {
 	bytes, err := ioutil.ReadAll(r)
 	if err != nil {
 		return "", err
@@ -30,4 +30,4 @@ func Prettify(r io.ReadCloser) (string, error) {
 		mod += string(c)
 	}
 	return mod, nil
-}
+}*/
