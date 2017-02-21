@@ -2,8 +2,10 @@ package soup
 
 import (
 	//"io"
+	"golang.org/x/net/html"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func Get(url string) (string, error) {
@@ -17,6 +19,14 @@ func Get(url string) (string, error) {
 	}
 	s := string(bytes)
 	return s, nil
+}
+
+func HTMLParse(s string) (*html.Node, error) {
+	r, err := html.Parse(strings.NewReader(s))
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
 }
 
 /* Prettify() function to be looked at later
