@@ -1,17 +1,22 @@
 package soup
 
 import (
-	"io"
+	//"io"
 	"io/ioutil"
 	"net/http"
 )
 
-func Make(url string) (io.ReadCloser, error) {
+func Get(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return resp.Body, nil
+	bytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	s := string(bytes)
+	return s, nil
 }
 
 /*func Prettify(r io.ReadCloser) (string, error) {
