@@ -9,11 +9,11 @@ import (
 func Get(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", err
+		return "<>", err
 	}
 	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return "<>", err
 	}
 	s := string(bytes)
 	return s, nil
