@@ -9,6 +9,14 @@ import (
 	"strings"
 )
 
+type Node interface {
+	Find(args ...string) Node
+	Tag() string
+	Attrs() []html.Attribute
+	Text() string
+	FindAll(args ...string) []Root
+}
+
 func Get(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -22,7 +30,7 @@ func Get(url string) (string, error) {
 	return s, nil
 }
 
-func HTMLParse(s string) Test {
+func HTMLParse(s string) Node {
 	r, err := html.Parse(strings.NewReader(s))
 	if err != nil {
 		log.Fatal(err)
@@ -33,19 +41,11 @@ func HTMLParse(s string) Test {
 	return Root{r}
 }
 
-type Test interface {
-	Find(args ...string) Test
-	Tag() string
-	Attrs() []html.Attribute
-	Text() string
-	FindAll(args ...string) []Root
-}
-
 type Root struct {
 	Pointer *html.Node
 }
 
-func (r Root) Find(args ...string) Test {
+func (r Root) Find(args ...string) Node {
 	temp, ok, _ := fetch.FindOnce(r.Pointer, args, false)
 	if ok == false {
 		return nil
