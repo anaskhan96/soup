@@ -33,7 +33,7 @@ func HTMLParse(s string) Test {
 	return Root{r}
 }
 
-/* WIP : Find Funtion */
+/* WIP : Find Function */
 type Test interface {
 	Find(tag string) Test
 	Tag() string
@@ -45,7 +45,7 @@ type Root struct {
 }
 
 func (r Root) Find(tag string) Test {
-	temp, ok := fetch.FindOnce(r.Pointer, tag)
+	temp, ok, _ := fetch.FindOnce(r.Pointer, tag, false)
 	if ok == false {
 		return nil
 	}
