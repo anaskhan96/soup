@@ -5,14 +5,14 @@ import "golang.org/x/net/html"
 func FindOnce(n *html.Node, args []string, uni bool) (*html.Node, bool, bool) {
 	if uni == true {
 		if n.Type == html.ElementNode && n.Data == args[0] {
-			if len(args)>1 {
+			if len(args) > 1 {
 				for i := 0; i < len(n.Attr); i++ {
 					if n.Attr[i].Key == args[1] && n.Attr[i].Val == args[2] {
 						return n, true, true
 					}
 				}
 			} else {
-				return n,true,true
+				return n, true, true
 			}
 		}
 	}
@@ -24,4 +24,27 @@ func FindOnce(n *html.Node, args []string, uni bool) (*html.Node, bool, bool) {
 		}
 	}
 	return nil, false, true
+}
+
+var nodeLinks=make([]*html.Node,0,10)
+
+func FindAllofem(n *html.Node, args []string, uni bool) ([]*html.Node, bool, bool) {
+	if uni==true {
+		if n.Data==args[0] {
+			if len(args)>1 {
+				for i:=0;i<len(n.Attr);i++ {
+					if n.Attr[i].Key==args[1] && n.Attr[i].Val==args[2] {
+						nodeLinks=append(nodeLinks,n)
+					}
+				}
+			} else {
+				nodeLinks=append(nodeLinks,n)
+			}
+		}
+	}
+	uni = true
+	for c:=n.FirstChild; c!=nil; c=c.NextSibling {
+		FindAllofem(c,args,true)
+	}
+	return nodeLinks,true,true
 }

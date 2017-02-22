@@ -38,6 +38,7 @@ type Test interface {
 	Tag() string
 	Attrs() []html.Attribute
 	Text() string
+	FindAll(args ...string) []Root
 }
 
 type Root struct {
@@ -45,11 +46,20 @@ type Root struct {
 }
 
 func (r Root) Find(args ...string) Test {
-	temp, ok, _ := fetch.FindOnce(r.Pointer,args,false)
+	temp, ok, _ := fetch.FindOnce(r.Pointer, args, false)
 	if ok == false {
 		return nil
 	}
 	return Root{temp}
+}
+
+func (r Root) FindAll(args ...string) []Root {
+	temp,_,_:=fetch.FindAllofem(r.Pointer,args,false)
+	pointers:=make([]Root,0,10)
+	for i:=0;i<len(temp);i++ {
+		pointers=append(pointers,Root{temp[i]})
+	}
+	return pointers
 }
 
 func (r Root) Tag() string {
@@ -61,11 +71,11 @@ func (r Root) Attrs() []html.Attribute {
 }
 
 func (r Root) Text() string {
-	k:=r.Pointer.FirstChild
-	if k.Type==html.TextNode{
+	k := r.Pointer.FirstChild
+	if k.Type == html.TextNode {
 		return k.Data
 	}
-	return "<>"
+	return ""
 }
 
 /* Prettify() function to be looked at later
