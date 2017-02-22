@@ -1,9 +1,10 @@
 package soup
 
 import (
-	//"io"
+	"github.com/anaskhan96/soup/fetch"
 	"golang.org/x/net/html"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -21,13 +22,45 @@ func Get(url string) (string, error) {
 	return s, nil
 }
 
-func HTMLParse(s string) (*html.Node, error) {
+func HTMLParse(s string) Test {
 	r, err := html.Parse(strings.NewReader(s))
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-	return r, nil
+	if strings.HasPrefix(s, "<!") {
+		return Root{r.FirstChild.NextSibling}
+	}
+	return Root{r}
 }
+
+/* WIP : Find Funtion */
+type Test interface {
+	Find(tag string) Test
+	Tag() string
+	Attrs() []html.Attribute
+}
+
+type Root struct {
+	Pointer *html.Node
+}
+
+func (r Root) Find(tag string) Test {
+	temp, ok := fetch.FindOnce(r.Pointer, tag)
+	if ok == false {
+		return nil
+	}
+	return Root{temp}
+}
+
+func (r Root) Tag() string {
+	return r.Pointer.Data
+}
+
+func (r Root) Attrs() []html.Attribute {
+	return r.Pointer.Attr
+}
+
+/* ------------------- */
 
 /* Prettify() function to be looked at later
 func Prettify(r io.ReadCloser) (string, error) {
