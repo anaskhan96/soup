@@ -35,7 +35,7 @@ func HTMLParse(s string) Test {
 
 /* WIP : Find Function */
 type Test interface {
-	Find(tag string) Test
+	Find(args ...string) Test
 	Tag() string
 	Attrs() []html.Attribute
 }
@@ -44,8 +44,8 @@ type Root struct {
 	Pointer *html.Node
 }
 
-func (r Root) Find(tag string) Test {
-	temp, ok, _ := fetch.FindOnce(r.Pointer, tag, false)
+func (r Root) Find(args ...string) Test {
+	temp, ok, _ := fetch.FindOnce(r.Pointer,args,false)
 	if ok == false {
 		return nil
 	}
