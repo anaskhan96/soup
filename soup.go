@@ -33,11 +33,11 @@ func HTMLParse(s string) Test {
 	return Root{r}
 }
 
-/* WIP : Find Function */
 type Test interface {
 	Find(args ...string) Test
 	Tag() string
 	Attrs() []html.Attribute
+	Text() string
 }
 
 type Root struct {
@@ -60,7 +60,13 @@ func (r Root) Attrs() []html.Attribute {
 	return r.Pointer.Attr
 }
 
-/* ------------------- */
+func (r Root) Text() string {
+	k:=r.Pointer.FirstChild
+	if k.Type==html.TextNode{
+		return k.Data
+	}
+	return "<>"
+}
 
 /* Prettify() function to be looked at later
 func Prettify(r io.ReadCloser) (string, error) {
