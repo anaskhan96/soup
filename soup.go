@@ -54,10 +54,14 @@ func (r Root) Find(args ...string) Node {
 }
 
 func (r Root) FindAll(args ...string) []Root {
-	temp,_,_:=fetch.FindAllofem(r.Pointer,args,false)
-	pointers:=make([]Root,0,10)
-	for i:=0;i<len(temp);i++ {
-		pointers=append(pointers,Root{temp[i]})
+	fetch.Set()
+	temp, _, _:= fetch.FindAllofem(r.Pointer, args, false)
+	if len(temp) == 0 {
+		return nil
+	}
+	pointers := make([]Root, 0, 10)
+	for i := 0; i < len(temp); i++ {
+		pointers = append(pointers, Root{temp[i]})
 	}
 	return pointers
 }
