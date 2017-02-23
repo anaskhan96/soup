@@ -1,3 +1,8 @@
+/* fetch package implements those functions that
+shouldn't be included in soup.go so as to not put it
+within the user's reach
+ */
+
 package fetch
 
 import "golang.org/x/net/html"
@@ -8,6 +13,7 @@ func Set() {
 	nodeLinks = make([]*html.Node, 0, 10)
 }
 
+// Using depth first search to find the first occurrence and return
 func FindOnce(n *html.Node, args []string, uni bool) (*html.Node, bool, bool) {
 	if uni == true {
 		if n.Type == html.ElementNode && n.Data == args[0] {
@@ -32,6 +38,7 @@ func FindOnce(n *html.Node, args []string, uni bool) (*html.Node, bool, bool) {
 	return nil, false, true
 }
 
+// Using depth first search to find all occurrences and return
 func FindAllofem(n *html.Node, args []string, uni bool) ([]*html.Node, bool, bool) {
 	if uni == true {
 		if n.Data == args[0] {

@@ -1,3 +1,7 @@
+/* soup package implements a simple web scraper for Go,
+keeping it as similar as possible to BeautifulSoup
+*/
+
 package soup
 
 import (
@@ -23,6 +27,7 @@ type Root struct {
 	Pointer *html.Node
 }
 
+// Returns the HTML returned by the url in string
 func Get(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -36,6 +41,7 @@ func Get(url string) (string, error) {
 	return s, nil
 }
 
+// Parses the HTML returning a start pointer to the DOM
 func HTMLParse(s string) Node {
 	r, err := html.Parse(strings.NewReader(s))
 	if err != nil {
@@ -47,6 +53,9 @@ func HTMLParse(s string) Node {
 	return Root{r}
 }
 
+// Finds the first occurrence of the given tag name,
+// with or without attribute key and value specified,
+// and returns a struct with a pointer to it
 func (r Root) Find(args ...string) Node {
 	temp, ok, _ := fetch.FindOnce(r.Pointer, args, false)
 	if ok == false {
@@ -55,6 +64,10 @@ func (r Root) Find(args ...string) Node {
 	return Root{temp}
 }
 
+// Finds all occurrences of the given tag name,
+// with or without key and value specified,
+// and returns an array of structs, each having
+// the respective pointers
 func (r Root) FindAll(args ...string) []Root {
 	fetch.Set()
 	temp, _, _:= fetch.FindAllofem(r.Pointer, args, false)
@@ -68,22 +81,29 @@ func (r Root) FindAll(args ...string) []Root {
 	return pointers
 }
 
+// Finds the next sibling of the pointer in the DOM
+// returning a struct with a pointer to it
 func (r Root) FindNextSibling() Node {
 	return Root{r.Pointer.NextSibling.NextSibling}
 }
 
+// Finds the previous sibling of the pointer in the DOM
+// returning a struct with a pointer to it
 func (r Root) FindPrevSibling() Node {
 	return Root{r.Pointer.PrevSibling.PrevSibling}
 }
 
+// Returns the Tag name of the element
 func (r Root) Tag() string {
 	return r.Pointer.Data
 }
 
+// Returns an array containing key and values of all attributes
 func (r Root) Attrs() []html.Attribute {
 	return r.Pointer.Attr
 }
 
+// Returns the string inside a non-nested element
 func (r Root) Text() string {
 	k := r.Pointer.FirstChild
 	if k.Type == html.TextNode {
