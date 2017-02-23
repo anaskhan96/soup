@@ -1,7 +1,7 @@
 # soup
-**Web Scraper in Go, similar to BeautifulSoup in Python**
+**Web Scraper in Go, similar to BeautifulSoup**
 
-*soup* is a small web scraper package for Go, with its interface highly similar to that of BeautifulSoup in Python.
+*soup* is a small web scraper package for Go, with its interface highly similar to that of BeautifulSoup.
 
 Functions implemented till now :
 ```go
