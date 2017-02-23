@@ -69,11 +69,11 @@ func (r Root) FindAll(args ...string) []Root {
 }
 
 func (r Root) FindNextSibling() Node {
-	return Root{r.Pointer.NextSibling}
+	return Root{r.Pointer.NextSibling.NextSibling}
 }
 
 func (r Root) FindPrevSibling() Node {
-	return Root{r.Pointer.PrevSibling}
+	return Root{r.Pointer.PrevSibling.PrevSibling}
 }
 
 func (r Root) Tag() string {
