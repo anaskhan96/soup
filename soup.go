@@ -16,7 +16,7 @@ import (
 type Node interface {
 	Find(args ...string) Node
 	Tag() string
-	Attrs() []html.Attribute
+	Attrs() map[string]string
 	Text() string
 	FindAll(args ...string) []Root
 	FindNextSibling() Node
@@ -31,11 +31,11 @@ type Root struct {
 func Get(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return "<>", err
+		return "No", err
 	}
 	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "<>", err
+		return "No", err
 	}
 	s := string(bytes)
 	return s, nil
@@ -99,8 +99,9 @@ func (r Root) Tag() string {
 }
 
 // Returns an array containing key and values of all attributes
-func (r Root) Attrs() []html.Attribute {
-	return r.Pointer.Attr
+func (r Root) Attrs() map[string]string {
+	fetch.Set()
+	return fetch.GetKeyValue(r.Pointer.Attr)
 }
 
 // Returns the string inside a non-nested element
