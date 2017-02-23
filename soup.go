@@ -15,6 +15,12 @@ type Node interface {
 	Attrs() []html.Attribute
 	Text() string
 	FindAll(args ...string) []Root
+	FindNextSibling() Node
+	FindPrevSibling() Node
+}
+
+type Root struct {
+	Pointer *html.Node
 }
 
 func Get(url string) (string, error) {
@@ -41,10 +47,6 @@ func HTMLParse(s string) Node {
 	return Root{r}
 }
 
-type Root struct {
-	Pointer *html.Node
-}
-
 func (r Root) Find(args ...string) Node {
 	temp, ok, _ := fetch.FindOnce(r.Pointer, args, false)
 	if ok == false {
@@ -64,6 +66,14 @@ func (r Root) FindAll(args ...string) []Root {
 		pointers = append(pointers, Root{temp[i]})
 	}
 	return pointers
+}
+
+func (r Root) FindNextSibling() Node {
+	return Root{r.Pointer.NextSibling}
+}
+
+func (r Root) FindPrevSibling() Node {
+	return Root{r.Pointer.PrevSibling}
 }
 
 func (r Root) Tag() string {

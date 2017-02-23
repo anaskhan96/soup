@@ -2,10 +2,10 @@ package fetch
 
 import "golang.org/x/net/html"
 
-var NodeLinks []*html.Node
+var nodeLinks []*html.Node
 
 func Set() {
-	NodeLinks = make([]*html.Node, 0, 10)
+	nodeLinks = make([]*html.Node, 0, 10)
 }
 
 func FindOnce(n *html.Node, args []string, uni bool) (*html.Node, bool, bool) {
@@ -38,11 +38,11 @@ func FindAllofem(n *html.Node, args []string, uni bool) ([]*html.Node, bool, boo
 			if len(args) > 1 && len(args) < 4 {
 				for i := 0; i < len(n.Attr); i++ {
 					if n.Attr[i].Key == args[1] && n.Attr[i].Val == args[2] {
-						NodeLinks = append(NodeLinks, n)
+						nodeLinks = append(nodeLinks, n)
 					}
 				}
 			} else if len(args) == 1 {
-				NodeLinks = append(NodeLinks, n)
+				nodeLinks = append(nodeLinks, n)
 			}
 		}
 	}
@@ -50,5 +50,5 @@ func FindAllofem(n *html.Node, args []string, uni bool) ([]*html.Node, bool, boo
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		FindAllofem(c, args, true)
 	}
-	return NodeLinks, true, true
+	return nodeLinks, true, true
 }
