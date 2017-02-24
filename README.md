@@ -1,4 +1,6 @@
 # soup
+[![Build Status](https://travis-ci.org/anaskhan96/soup.svg?branch=master)](https://travis-ci.org/anaskhan96/soup)
+
 **Web Scraper in Go, similar to BeautifulSoup**
 
 *soup* is a small web scraper package for Go, with its interface highly similar to that of BeautifulSoup.
