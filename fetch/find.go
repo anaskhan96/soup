@@ -7,14 +7,10 @@ package fetch
 
 import "golang.org/x/net/html"
 
-var (
-	nodeLinks []*html.Node
-	keyvalues map[string]string
-)
+var nodeLinks []*html.Node
 
 func Set() {
 	nodeLinks = make([]*html.Node, 0, 10)
-	keyvalues = make(map[string]string)
 }
 
 // Using depth first search to find the first occurrence and return
@@ -66,6 +62,7 @@ func FindAllofem(n *html.Node, args []string, uni bool) ([]*html.Node, bool, boo
 
 // Returns a key pair value (like a dictionary) for each attribute
 func GetKeyValue(attributes []html.Attribute) map[string]string {
+	var keyvalues = make(map[string]string)
 	for i := 0; i < len(attributes); i++ {
 		_, exists := keyvalues[attributes[i].Key]
 		if exists == false {
