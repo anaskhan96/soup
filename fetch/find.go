@@ -55,7 +55,7 @@ func FindAllofem(n *html.Node, args []string) ([]*html.Node) {
 			f(c, args, true)
 		}
 	}
-	f(n,args,false)
+	f(n, args, false)
 	return nodeLinks
 }
 

@@ -100,6 +100,9 @@ func (r Root) Tag() string {
 
 // Returns an array containing key and values of all attributes
 func (r Root) Attrs() map[string]string {
+	if len(r.Pointer.Attr) == 0 {
+		return nil
+	}
 	return fetch.GetKeyValue(r.Pointer.Attr)
 }
 
