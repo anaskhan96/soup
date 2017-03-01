@@ -58,7 +58,7 @@ func HTMLParse(s string) Node {
 // with or without attribute key and value specified,
 // and returns a struct with a pointer to it
 func (r Root) Find(args ...string) Node {
-	temp, ok, _ := fetch.FindOnce(r.Pointer, args, false)
+	temp, ok := fetch.FindOnce(r.Pointer, args, false)
 	if ok == false {
 		return nil
 	}
@@ -70,7 +70,7 @@ func (r Root) Find(args ...string) Node {
 // and returns an array of structs, each having
 // the respective pointers
 func (r Root) FindAll(args ...string) []Root {
-	temp, _, _ := fetch.FindAllofem(r.Pointer, args, false)
+	temp := fetch.FindAllofem(r.Pointer, args)
 	if len(temp) == 0 {
 		return nil
 	}
