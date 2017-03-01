@@ -33,6 +33,7 @@ func Get(url string) (string, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
