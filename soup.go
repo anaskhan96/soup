@@ -70,7 +70,6 @@ func (r Root) Find(args ...string) Node {
 // and returns an array of structs, each having
 // the respective pointers
 func (r Root) FindAll(args ...string) []Root {
-	fetch.Set()
 	temp, _, _ := fetch.FindAllofem(r.Pointer, args, false)
 	if len(temp) == 0 {
 		return nil
