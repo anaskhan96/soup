@@ -92,7 +92,11 @@ func (r Root) FindNextSibling() Node {
 }
 
 func (r Root) FindPrevSibling() Node {
-	// todo
+	prevSibling := r.Pointer.PrevSibling
+	if prevSibling == nil {
+		log.Fatal("No previous sibling found")
+	}
+	return Root{prevSibling}
 }
 
 // Finds the next element sibling of the pointer in the DOM
