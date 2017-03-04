@@ -15,7 +15,7 @@ import (
 
 type Node interface {
 	Find(args ...string) Node
-	Tag() string
+	NodeValue() string
 	Attrs() map[string]string
 	Text() string
 	FindAll(args ...string) []Root
@@ -129,8 +129,8 @@ func (r Root) FindPrevElementSibling() Node {
 	}
 }
 
-// Returns the Tag name of the element
-func (r Root) Tag() string {
+// Returns the nodeValue of the element
+func (r Root) NodeValue() string {
 	return r.Pointer.Data
 }
 
