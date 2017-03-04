@@ -62,14 +62,14 @@ func TestFind(t *testing.T) {
 	}
 }
 
-func TestFindNextPrev(t *testing.T) {
-	// FindNextSibling() and Tag()
-	actual := doc.Find("table").FindNextSibling().Tag()
+func TestFindNextPrevElement(t *testing.T) {
+	// FindNextElementSibling() and Tag()
+	actual := doc.Find("table").FindNextElementSibling().Tag()
 	if !reflect.DeepEqual(actual, "div") {
 		t.Error("Instead of `div`, got", actual)
 	}
-	// FindPrevSibling() and Tag()
-	actual = doc.Find("p").FindPrevSibling().Tag()
+	// FindPrevElementSibling() and Tag()
+	actual = doc.Find("p").FindPrevElementSibling().Tag()
 	if !reflect.DeepEqual(actual, "div") {
 		t.Error("Instead of `div`, got", actual)
 	}

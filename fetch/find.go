@@ -33,7 +33,7 @@ func FindOnce(n *html.Node, args []string, uni bool) (*html.Node, bool) {
 }
 
 // Using depth first search to find all occurrences and return
-func FindAllofem(n *html.Node, args []string) ([]*html.Node) {
+func FindAllofem(n *html.Node, args []string) []*html.Node {
 	var nodeLinks = make([]*html.Node, 0, 10)
 	var f func(*html.Node, []string, bool)
 	f = func(n *html.Node, args []string, uni bool) {
