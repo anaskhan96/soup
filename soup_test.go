@@ -3,6 +3,7 @@ package soup
 import (
 	"reflect"
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -26,12 +27,13 @@ const testHTML = `
     <div id="0">
       <div id="1">Just two divs peacing out</div>
     </div>
+    check
     <div id="2">One more</div>
     <p>This is the home page for the HelloWorld Web application. </p>
     <p>To prove that they work, you can execute either of the following links:
     <ul>
-      <li>To a <a href="hello.jsp">JSP page</a>.
-      <li>To a <a href="hello">servlet</a>.
+      <li>To a <a href="hello.jsp">JSP page</a></li>
+      <li>To a <a href="hello">servlet</a></li>
     </ul>
     </p>
     <div id="3">
@@ -63,8 +65,18 @@ func TestFind(t *testing.T) {
 }
 
 func TestFindNextPrevElement(t *testing.T) {
+	// FindNextSibling() and NodeValue field
+	actual := doc.Find("div", "id", "0").FindNextSibling().NodeValue
+	if !reflect.DeepEqual(strings.TrimSpace(actual), "check") {
+		t.Error("Instead of `check`, got", actual)
+	}
+	// FindPrevSibling() and NodeValue field
+	actual = doc.Find("div", "id", "2").FindPrevSibling().NodeValue
+	if !reflect.DeepEqual(strings.TrimSpace(actual), "check") {
+		t.Error("Instead of `check`, got", actual)
+	}
 	// FindNextElementSibling() and NodeValue field
-	actual := doc.Find("table").FindNextElementSibling().NodeValue
+	actual = doc.Find("table").FindNextElementSibling().NodeValue
 	if !reflect.DeepEqual(actual, "div") {
 		t.Error("Instead of `div`, got", actual)
 	}
