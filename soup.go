@@ -129,14 +129,14 @@ func (r Root) FindPrevElementSibling() Node {
 	}
 }
 
-// Returns the nodeValue of the element
+// Returns the node value of the element
 func (r Root) NodeValue() string {
 	return r.Pointer.Data
 }
 
 // Returns an array containing key and values of all attributes
 func (r Root) Attrs() map[string]string {
-	if len(r.Pointer.Attr) == 0 {
+	if r.Pointer.Type != html.ElementNode || len(r.Pointer.Attr) == 0 {
 		return nil
 	}
 	return fetch.GetKeyValue(r.Pointer.Attr)
@@ -145,7 +145,7 @@ func (r Root) Attrs() map[string]string {
 // Returns the string inside a non-nested element
 func (r Root) Text() string {
 	k := r.Pointer.FirstChild
-	if k.Type == html.TextNode {
+	if k != nil && k.Type == html.TextNode {
 		return k.Data
 	}
 	return ""
