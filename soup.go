@@ -19,6 +19,8 @@ type Node interface {
 	Attrs() map[string]string
 	Text() string
 	FindAll(args ...string) []Root
+	FindNextSibling() Node
+	FindPrevSibling() Node
 	FindNextElementSibling() Node
 	FindPrevElementSibling() Node
 }
@@ -79,6 +81,14 @@ func (r Root) FindAll(args ...string) []Root {
 		pointers = append(pointers, Root{temp[i]})
 	}
 	return pointers
+}
+
+func (r Root) FindNextSibling() Node {
+	// todo
+}
+
+func (r Root) FindPrevSibling() Node {
+	// todo
 }
 
 // Finds the next element sibling of the pointer in the DOM
