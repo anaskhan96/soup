@@ -14,18 +14,18 @@ import (
 )
 
 type Node interface {
-	Find(args ...string) Node
+	Find(args ...string) Root
 	Attrs() map[string]string
 	Text() string
 	FindAll(args ...string) []Root
-	FindNextSibling() Node
-	FindPrevSibling() Node
-	FindNextElementSibling() Node
-	FindPrevElementSibling() Node
+	FindNextSibling() Root
+	FindPrevSibling() Root
+	FindNextElementSibling() Root
+	FindPrevElementSibling() Root
 }
 
 type Root struct {
-	Pointer *html.Node
+	Pointer   *html.Node
 	NodeValue string
 }
 
@@ -78,7 +78,7 @@ func (r Root) FindAll(args ...string) []Root {
 	}
 	pointers := make([]Root, 0, 10)
 	for i := 0; i < len(temp); i++ {
-		pointers = append(pointers, Root{temp[i],temp[i].Data})
+		pointers = append(pointers, Root{temp[i], temp[i].Data})
 	}
 	return pointers
 }
@@ -96,7 +96,7 @@ func (r Root) FindPrevSibling() Root {
 	if prevSibling == nil {
 		log.Fatal("No previous sibling found")
 	}
-	return Root{prevSibling,prevSibling.Data}
+	return Root{prevSibling, prevSibling.Data}
 }
 
 // Finds the next element sibling of the pointer in the DOM
@@ -107,9 +107,9 @@ func (r Root) FindNextElementSibling() Root {
 		log.Fatal("No next sibling found")
 	}
 	if nextSibling.Type == html.ElementNode {
-		return Root{nextSibling,nextSibling.Data}
+		return Root{nextSibling, nextSibling.Data}
 	} else {
-		p := Root{nextSibling,nextSibling.Data}
+		p := Root{nextSibling, nextSibling.Data}
 		return p.FindNextElementSibling()
 	}
 }
@@ -122,9 +122,9 @@ func (r Root) FindPrevElementSibling() Root {
 		log.Fatal("No previous sibling found")
 	}
 	if prevSibling.Type == html.ElementNode {
-		return Root{prevSibling,prevSibling.Data}
+		return Root{prevSibling, prevSibling.Data}
 	} else {
-		p := Root{prevSibling,prevSibling.Data}
+		p := Root{prevSibling, prevSibling.Data}
 		return p.FindPrevElementSibling()
 	}
 }
