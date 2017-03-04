@@ -84,12 +84,20 @@ func (r Root) FindAll(args ...string) []Root {
 // Finds the next sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindNextSibling() Node {
-	return Root{r.Pointer.NextSibling.NextSibling}
+	nextSibling := r.Pointer.NextSibling.NextSibling
+	if nextSibling == nil {
+		log.Fatal("No next sibling found")
+	}
+	return Root{nextSibling}
 }
 
 // Finds the previous sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindPrevSibling() Node {
+	prevSibling := r.Pointer.PrevSibling.PrevSibling
+	if prevSibling == nil {
+		log.Fatal("No previous sibling found")
+	}
 	return Root{r.Pointer.PrevSibling.PrevSibling}
 }
 
