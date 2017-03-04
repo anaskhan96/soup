@@ -84,7 +84,11 @@ func (r Root) FindAll(args ...string) []Root {
 }
 
 func (r Root) FindNextSibling() Node {
-	// todo
+	nextSibling := r.Pointer.NextSibling
+	if nextSibling == nil {
+		log.Fatal("No next sibling found")
+	}
+	return Root{nextSibling}
 }
 
 func (r Root) FindPrevSibling() Node {
