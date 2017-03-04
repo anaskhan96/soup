@@ -60,7 +60,7 @@ func HTMLParse(s string) Node {
 func (r Root) Find(args ...string) Node {
 	temp, ok := fetch.FindOnce(r.Pointer, args, false)
 	if ok == false {
-		return nil
+		log.Fatal("Element ",args[0]," with attributes ",args[1:]," not found")
 	}
 	return Root{temp}
 }
