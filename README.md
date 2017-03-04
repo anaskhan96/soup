@@ -10,15 +10,20 @@
 Functions implemented till now :
 ```go
 func Get(string) (string,error) // Takes the url as an argument, returns HTML string
-func HTMLParse(string) interface{} // Takes the HTML string as an argument, returns a pointer to the DOM constructed
-func Find([]string) interface{} // Element tag,(attribute key-value pair) as argument, pointer to first occurence returned
+func HTMLParse(string) struct{} // Takes the HTML string as an argument, returns a pointer to the DOM constructed
+func Find([]string) struct{} // Element tag,(attribute key-value pair) as argument, pointer to first occurence returned
 func FindAll([]string) []struct{} // Same as Find(), but pointers to all occurrences returned
-func FindNextElementSibling() interface{} // Pointer to the next element sibling of the Element in the DOM returned
-func FindPrevElementSibling() interface{} // Pointer to the previous element sibling of the Element in the DOM returned
+func FindNextSibling() struct{} // Pointer to the next sibling of the Element in the DOM returned
+func FindNextElementSibling() struct{} // Pointer to the next element sibling of the Element in the DOM returned
+func FindPrevSibling() struct{} // Pointer to the previous sibling of the Element in the DOM returned
+func FindPrevElementSibling() struct{} // Pointer to the previous element sibling of the Element in the DOM returned
 func Attrs() map[string]string // Map returned with all the attributes of the Element as lookup to their respective values
-func Tag() string // Tag name of the Element returned
 func Text() string // Full text inside a non-nested tag returned
 ```
+
+The struct returned by the functions has two fields :
+* `Pointer` containing the pointer to the current html node
+* `NodeValue` containing the current html node's value, i.e. the tag name for an ElementNode, or the text in case of a TextNode
 
 ## Installation
 Install the package using the command
