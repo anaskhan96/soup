@@ -108,10 +108,9 @@ func (r Root) FindNextElementSibling() Root {
 	}
 	if nextSibling.Type == html.ElementNode {
 		return Root{nextSibling, nextSibling.Data}
-	} else {
-		p := Root{nextSibling, nextSibling.Data}
-		return p.FindNextElementSibling()
 	}
+	p := Root{nextSibling, nextSibling.Data}
+	return p.FindNextElementSibling()
 }
 
 // Finds the previous element sibling of the pointer in the DOM
@@ -123,10 +122,9 @@ func (r Root) FindPrevElementSibling() Root {
 	}
 	if prevSibling.Type == html.ElementNode {
 		return Root{prevSibling, prevSibling.Data}
-	} else {
-		p := Root{prevSibling, prevSibling.Data}
-		return p.FindPrevElementSibling()
 	}
+	p := Root{prevSibling, prevSibling.Data}
+	return p.FindPrevElementSibling()
 }
 
 // Returns the node value of the element
