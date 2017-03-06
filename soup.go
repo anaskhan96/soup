@@ -50,9 +50,21 @@ func HTMLParse(s string) Root {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if strings.HasPrefix(s, "<!") {
-		return Root{r.FirstChild.NextSibling, r.FirstChild.NextSibling.Data}
+
+	//Navigate to find an html.ElementNode
+	for r.Type != html.ElementNode {
+
+		switch r.Type {
+		case html.DocumentNode:
+			r = r.FirstChild
+		case html.DoctypeNode:
+			r = r.NextSibling
+		case html.CommentNode:
+			r = r.NextSibling
+		}
+
 	}
+
 	return Root{r, r.Data}
 }
 
