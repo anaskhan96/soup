@@ -6,8 +6,8 @@ within the user's reach
 package fetch
 
 import (
+	"log"
 	"golang.org/x/net/html"
-	"fmt"
 )
 
 // Using depth first search to find the first occurrence and return
@@ -75,8 +75,8 @@ func GetKeyValue(attributes []html.Attribute) map[string]string {
 }
 
 // Catch panics when they occur
-func CatchPanic(fnName string){
-	if r:=recover();r!=nil{
-		fmt.Println("Error occured in",fnName,":",r)
+func CatchPanic(fnName string) {
+	if r := recover(); r != nil {
+		log.Println("Error occured in", fnName, ":", r)
 	}
 }

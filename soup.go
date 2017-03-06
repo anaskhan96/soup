@@ -8,7 +8,6 @@ import (
 	"github.com/anaskhan96/soup/fetch"
 	"golang.org/x/net/html"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -31,14 +30,15 @@ type Root struct {
 
 // Returns the HTML returned by the url in string
 func Get(url string) (string, error) {
+	defer fetch.CatchPanic("Get()")
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		panic("Couldn't perform GET request to "+url)
 	}
 	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		panic("Unable to read the response body")
 	}
 	s := string(bytes)
 	return s, nil
@@ -46,14 +46,13 @@ func Get(url string) (string, error) {
 
 // Parses the HTML returning a start pointer to the DOM
 func HTMLParse(s string) Root {
+	defer fetch.CatchPanic("HTMLParse()")
 	r, err := html.Parse(strings.NewReader(s))
 	if err != nil {
-		log.Fatal(err)
+		panic("Unable to parse the HTML")
 	}
-
 	//Navigate to find an html.ElementNode
 	for r.Type != html.ElementNode {
-
 		switch r.Type {
 		case html.DocumentNode:
 			r = r.FirstChild
@@ -64,7 +63,6 @@ func HTMLParse(s string) Root {
 		}
 
 	}
-
 	return Root{r, r.Data}
 }
 
@@ -75,7 +73,7 @@ func (r Root) Find(args ...string) Root {
 	defer fetch.CatchPanic("Find()")
 	temp, ok := fetch.FindOnce(r.Pointer, args, false)
 	if ok == false {
-		panic("Element `"+args[0]+"` with attributes `"+strings.Join(args[1:]," ")+"` not found")
+		panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 	}
 	return Root{temp, temp.Data}
 }
@@ -88,7 +86,7 @@ func (r Root) FindAll(args ...string) []Root {
 	defer fetch.CatchPanic("FindAll()")
 	temp := fetch.FindAllofem(r.Pointer, args)
 	if len(temp) == 0 {
-		panic("No element `"+args[0]+"` with attributes `"+strings.Join(args[1:]," ")+"` not found")
+		panic("No element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 	}
 	pointers := make([]Root, 0, 10)
 	for i := 0; i < len(temp); i++ {
@@ -147,7 +145,11 @@ func (r Root) FindPrevElementSibling() Root {
 
 // Returns an array containing key and values of all attributes
 func (r Root) Attrs() map[string]string {
-	if r.Pointer.Type != html.ElementNode || len(r.Pointer.Attr) == 0 {
+	defer fetch.CatchPanic("Attrs()")
+	if r.Pointer.Type != html.ElementNode {
+		panic("Not an ElementNode")
+	}
+	if len(r.Pointer.Attr) == 0 {
 		return nil
 	}
 	return fetch.GetKeyValue(r.Pointer.Attr)
