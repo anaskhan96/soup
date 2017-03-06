@@ -157,8 +157,12 @@ func (r Root) Attrs() map[string]string {
 
 // Returns the string inside a non-nested element
 func (r Root) Text() string {
+	defer fetch.CatchPanic("Text()")
 	k := r.Pointer.FirstChild
-	if k != nil && k.Type == html.TextNode {
+	if k.Type != html.TextNode {
+		panic("First child not a text node")
+	}
+	if k != nil {
 		return k.Data
 	}
 	return ""
