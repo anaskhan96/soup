@@ -72,9 +72,11 @@ func HTMLParse(s string) Root {
 // with or without attribute key and value specified,
 // and returns a struct with a pointer to it
 func (r Root) Find(args ...string) Root {
+	fnName:="Find()"
+	defer fetch.CatchPanic(fnName)
 	temp, ok := fetch.FindOnce(r.Pointer, args, false)
 	if ok == false {
-		log.Fatal("Element ", args[0], " with attributes ", args[1:], " not found")
+		panic("Element `"+args[0]+"` with attributes `"+strings.Join(args[1:]," ")+"` not found")
 	}
 	return Root{temp, temp.Data}
 }

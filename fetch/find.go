@@ -5,7 +5,10 @@ within the user's reach
 
 package fetch
 
-import "golang.org/x/net/html"
+import (
+	"golang.org/x/net/html"
+	"fmt"
+)
 
 // Using depth first search to find the first occurrence and return
 func FindOnce(n *html.Node, args []string, uni bool) (*html.Node, bool) {
@@ -69,4 +72,11 @@ func GetKeyValue(attributes []html.Attribute) map[string]string {
 		}
 	}
 	return keyvalues
+}
+
+// Catch panics when they occur
+func CatchPanic(fnName string){
+	if r:=recover();r!=nil{
+		fmt.Println("Error occured in",fnName,":",r)
+	}
 }
