@@ -60,7 +60,7 @@ func TestFind(t *testing.T) {
 	// Nested Find()
 	actual = doc.Find("div").Find("div").Text()
 	if !reflect.DeepEqual(actual, "Just two divs peacing out") {
-		t.Error("Intead of `Just two divs peacing out`, got", actual)
+		t.Error("Instead of `Just two divs peacing out`, got", actual)
 	}
 }
 
@@ -94,7 +94,7 @@ func TestFindAll(t *testing.T) {
 		id := allDivs[i].Attrs()["id"]
 		actual, _ := strconv.Atoi(id)
 		if !reflect.DeepEqual(actual, i) {
-			t.Error("Intead of", i, "got", actual)
+			t.Error("Instead of", i, "got", actual)
 		}
 	}
 }
