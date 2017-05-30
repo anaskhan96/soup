@@ -86,7 +86,7 @@ func (r Root) FindAll(args ...string) []Root {
 	defer fetch.CatchPanic("FindAll()")
 	temp := fetch.FindAllofem(r.Pointer, args)
 	if len(temp) == 0 {
-		panic("No element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
+		panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 	}
 	pointers := make([]Root, 0, 10)
 	for i := 0; i < len(temp); i++ {

@@ -77,6 +77,6 @@ func GetKeyValue(attributes []html.Attribute) map[string]string {
 // Catch panics when they occur
 func CatchPanic(fnName string) {
 	if r := recover(); r != nil {
-		log.Println("Error occured in", fnName, ":", r)
+		log.Println("Error occurred in", fnName, ":", r)
 	}
 }
