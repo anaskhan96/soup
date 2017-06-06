@@ -5,11 +5,14 @@ keeping it as similar as possible to BeautifulSoup
 package soup
 
 import (
-	"github.com/anaskhan96/soup/fetch"
-	"golang.org/x/net/html"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"regexp"
+
+	"github.com/anaskhan96/soup/fetch"
+	"golang.org/x/net/html"
 )
 
 type Node interface {
@@ -33,7 +36,7 @@ func Get(url string) (string, error) {
 	defer fetch.CatchPanic("Get()")
 	resp, err := http.Get(url)
 	if err != nil {
-		panic("Couldn't perform GET request to "+url)
+		panic("Couldn't perform GET request to " + url)
 	}
 	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
@@ -159,11 +162,21 @@ func (r Root) Attrs() map[string]string {
 func (r Root) Text() string {
 	defer fetch.CatchPanic("Text()")
 	k := r.Pointer.FirstChild
+checkNode:
 	if k.Type != html.TextNode {
-		panic("First child not a text node")
+		k = k.NextSibling
+		if k == nil {
+			panic("No text node found")
+		}
+		goto checkNode
 	}
 	if k != nil {
-		return k.Data
+		r, _ := regexp.Compile(`^\s+$`)
+		if ok := r.MatchString(k.Data); ok == false {
+			return k.Data
+		}
+		k = k.NextSibling
+		goto checkNode
 	}
 	return ""
 }
