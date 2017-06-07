@@ -174,6 +174,9 @@ checkNode:
 		r, _ := regexp.Compile(`^\s+$`)
 		if ok := r.MatchString(k.Data); ok {
 			k = k.NextSibling
+			if k == nil {
+				panic("No text node found")
+			}
 			goto checkNode
 		}
 		return k.Data
