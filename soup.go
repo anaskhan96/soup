@@ -172,11 +172,11 @@ checkNode:
 	}
 	if k != nil {
 		r, _ := regexp.Compile(`^\s+$`)
-		if ok := r.MatchString(k.Data); ok == false {
-			return k.Data
+		if ok := r.MatchString(k.Data); ok {
+			k = k.NextSibling
+			goto checkNode
 		}
-		k = k.NextSibling
-		goto checkNode
+		return k.Data
 	}
 	return ""
 }
