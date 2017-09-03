@@ -71,9 +71,14 @@ func HTMLParse(s string) Root {
 	defer fetch.CatchPanic("HTMLParse()")
 	r, err := html.Parse(strings.NewReader(s))
 	if err != nil {
-		panic("Unable to parse the HTML")
+		if debug {
+			panic("Unable to parse the HTML")
+		}
+
+		return Root{nil, "", false}
 	}
-	//Navigate to find an html.ElementNode
+
+	// Navigate to find an html.ElementNode
 	for r.Type != html.ElementNode {
 		switch r.Type {
 		case html.DocumentNode:
@@ -113,12 +118,18 @@ func (r Root) FindAll(args ...string) []Root {
 	defer fetch.CatchPanic("FindAll()")
 	temp := fetch.FindAllofem(r.Pointer, args)
 	if len(temp) == 0 {
-		panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
+		if debug {
+			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
+		}
+
+		return []Root{}
 	}
+
 	pointers := make([]Root, 0, 10)
 	for i := 0; i < len(temp); i++ {
 		pointers = append(pointers, Root{temp[i], temp[i].Data, true})
 	}
+
 	return pointers
 }
 
@@ -127,8 +138,13 @@ func (r Root) FindNextSibling() Root {
 	defer fetch.CatchPanic("FindNextSibling()")
 	nextSibling := r.Pointer.NextSibling
 	if nextSibling == nil {
-		panic("No next sibling found")
+		if debug {
+			panic("No next sibling found")
+		}
+
+		return Root{nil, "", false}
 	}
+
 	return Root{nextSibling, nextSibling.Data, true}
 }
 
@@ -137,8 +153,13 @@ func (r Root) FindPrevSibling() Root {
 	defer fetch.CatchPanic("FindPrevSibling()")
 	prevSibling := r.Pointer.PrevSibling
 	if prevSibling == nil {
-		panic("No previous sibling found")
+		if debug {
+			panic("No previous sibling found")
+		}
+
+		return Root{nil, "", false}
 	}
+
 	return Root{prevSibling, prevSibling.Data, true}
 }
 
@@ -148,11 +169,17 @@ func (r Root) FindNextElementSibling() Root {
 	defer fetch.CatchPanic("FindNextElementSibling()")
 	nextSibling := r.Pointer.NextSibling
 	if nextSibling == nil {
-		panic("No next element sibling found")
+		if debug {
+			panic("No next element sibling found")
+		}
+
+		return Root{nil, "", false}
 	}
+
 	if nextSibling.Type == html.ElementNode {
 		return Root{nextSibling, nextSibling.Data, true}
 	}
+
 	p := Root{nextSibling, nextSibling.Data, true}
 	return p.FindNextElementSibling()
 }
@@ -163,11 +190,17 @@ func (r Root) FindPrevElementSibling() Root {
 	defer fetch.CatchPanic("FindPrevElementSibling()")
 	prevSibling := r.Pointer.PrevSibling
 	if prevSibling == nil {
-		panic("No previous element sibling found")
+		if debug {
+			panic("No previous element sibling found")
+		}
+
+		return Root{nil, "", false}
 	}
+
 	if prevSibling.Type == html.ElementNode {
 		return Root{prevSibling, prevSibling.Data, true}
 	}
+
 	p := Root{prevSibling, prevSibling.Data, true}
 	return p.FindPrevElementSibling()
 }
@@ -176,11 +209,17 @@ func (r Root) FindPrevElementSibling() Root {
 func (r Root) Attrs() map[string]string {
 	defer fetch.CatchPanic("Attrs()")
 	if r.Pointer.Type != html.ElementNode {
-		panic("Not an ElementNode")
+		if debug {
+			panic("Not an ElementNode")
+		}
+
+		return nil
 	}
+
 	if len(r.Pointer.Attr) == 0 {
 		return nil
 	}
+
 	return fetch.GetKeyValue(r.Pointer.Attr)
 }
 
@@ -192,21 +231,33 @@ checkNode:
 	if k.Type != html.TextNode {
 		k = k.NextSibling
 		if k == nil {
-			panic("No text node found")
+			if debug {
+				panic("No text node found")
+			}
+
+			return ""
 		}
+
 		goto checkNode
 	}
+
 	if k != nil {
 		r, _ := regexp.Compile(`^\s+$`)
 		if ok := r.MatchString(k.Data); ok {
 			k = k.NextSibling
 			if k == nil {
-				panic("No text node found")
+				if debug {
+					panic("No text node found")
+				}
+
+				return ""
 			}
+
 			goto checkNode
 		}
 		return k.Data
 	}
+
 	return ""
 }
 
