@@ -24,7 +24,7 @@ type Root struct {
 
 var debug = false
 
-// SetDebug set the debug status
+// SetDebug sets the debug status
 func SetDebug(d bool) {
 	debug = d
 }
