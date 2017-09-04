@@ -31,7 +31,7 @@ type Node interface {
 type Root struct {
 	Pointer   *html.Node
 	NodeValue string
-	Found     bool
+	Error     error
 }
 
 var debug = false
@@ -75,7 +75,7 @@ func HTMLParse(s string) Root {
 			panic("Unable to parse the HTML")
 		}
 
-		return Root{nil, "", false}
+		return Root{nil, "", errors.New("Unable to parse the HTML")}
 	}
 
 	// Navigate to find an html.ElementNode
@@ -90,7 +90,7 @@ func HTMLParse(s string) Root {
 		}
 
 	}
-	return Root{r, r.Data, true}
+	return Root{r, r.Data, nil}
 }
 
 // Find finds the first occurrence of the given tag name,
@@ -104,10 +104,10 @@ func (r Root) Find(args ...string) Root {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 		}
 
-		return Root{nil, "", false}
+		return Root{nil, "", errors.New("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")}
 	}
 
-	return Root{temp, temp.Data, true}
+	return Root{temp, temp.Data, nil}
 }
 
 // FindAll finds all occurrences of the given tag name,
@@ -127,7 +127,7 @@ func (r Root) FindAll(args ...string) []Root {
 
 	pointers := make([]Root, 0, 10)
 	for i := 0; i < len(temp); i++ {
-		pointers = append(pointers, Root{temp[i], temp[i].Data, true})
+		pointers = append(pointers, Root{temp[i], temp[i].Data, nil})
 	}
 
 	return pointers
@@ -142,10 +142,10 @@ func (r Root) FindNextSibling() Root {
 			panic("No next sibling found")
 		}
 
-		return Root{nil, "", false}
+		return Root{nil, "", errors.New("No next sibling found")}
 	}
 
-	return Root{nextSibling, nextSibling.Data, true}
+	return Root{nextSibling, nextSibling.Data, nil}
 }
 
 // FindPrevSibling returns...?
@@ -157,10 +157,10 @@ func (r Root) FindPrevSibling() Root {
 			panic("No previous sibling found")
 		}
 
-		return Root{nil, "", false}
+		return Root{nil, "", errors.New("No previous sibling found")}
 	}
 
-	return Root{prevSibling, prevSibling.Data, true}
+	return Root{prevSibling, prevSibling.Data, nil}
 }
 
 // FindNextElementSibling finds the next element sibling of the pointer in the DOM
@@ -173,14 +173,14 @@ func (r Root) FindNextElementSibling() Root {
 			panic("No next element sibling found")
 		}
 
-		return Root{nil, "", false}
+		return Root{nil, "", errors.New("No next element sibling found")}
 	}
 
 	if nextSibling.Type == html.ElementNode {
-		return Root{nextSibling, nextSibling.Data, true}
+		return Root{nextSibling, nextSibling.Data, nil}
 	}
 
-	p := Root{nextSibling, nextSibling.Data, true}
+	p := Root{nextSibling, nextSibling.Data, nil}
 	return p.FindNextElementSibling()
 }
 
@@ -194,14 +194,14 @@ func (r Root) FindPrevElementSibling() Root {
 			panic("No previous element sibling found")
 		}
 
-		return Root{nil, "", false}
+		return Root{nil, "", errors.New("No previous element sibling found")}
 	}
 
 	if prevSibling.Type == html.ElementNode {
-		return Root{prevSibling, prevSibling.Data, true}
+		return Root{prevSibling, prevSibling.Data, nil}
 	}
 
-	p := Root{prevSibling, prevSibling.Data, true}
+	p := Root{prevSibling, prevSibling.Data, nil}
 	return p.FindPrevElementSibling()
 }
 
