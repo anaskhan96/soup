@@ -15,19 +15,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-// Node is...?
-type Node interface {
-	Find(args ...string) Root
-	Attrs() map[string]string
-	Text() string
-	FindAll(args ...string) []Root
-	FindNextSibling() Root
-	FindPrevSibling() Root
-	FindNextElementSibling() Root
-	FindPrevElementSibling() Root
-}
-
-// Root is...?
+// Root is a structure containing a pointer to an html node, the node value, and an error variable to return an error if occurred
 type Root struct {
 	Pointer   *html.Node
 	NodeValue string
@@ -133,7 +121,8 @@ func (r Root) FindAll(args ...string) []Root {
 	return pointers
 }
 
-// FindNextSibling returns...?
+// FindNextSibling finds the next sibling of the pointer in the DOM
+// returning a struct with a pointer to it
 func (r Root) FindNextSibling() Root {
 	defer fetch.CatchPanic("FindNextSibling()")
 	nextSibling := r.Pointer.NextSibling
@@ -148,7 +137,8 @@ func (r Root) FindNextSibling() Root {
 	return Root{nextSibling, nextSibling.Data, nil}
 }
 
-// FindPrevSibling returns...?
+// FindPrevSibling finds the previous sibling of the pointer in the DOM
+// returning a struct with a pointer to it
 func (r Root) FindPrevSibling() Root {
 	defer fetch.CatchPanic("FindPrevSibling()")
 	prevSibling := r.Pointer.PrevSibling
