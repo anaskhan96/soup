@@ -37,20 +37,16 @@ func Get(url string) (string, error) {
 		if debug {
 			panic("Couldn't perform GET request to " + url)
 		}
-
 		return "", errors.New("Couldn't perform GET request to " + url)
 	}
-
 	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		if debug {
 			panic("Unable to read the response body")
 		}
-
 		return "", errors.New("Unable to read the response body")
 	}
-
 	return string(bytes), nil
 }
 
@@ -62,11 +58,8 @@ func HTMLParse(s string) Root {
 		if debug {
 			panic("Unable to parse the HTML")
 		}
-
 		return Root{nil, "", errors.New("Unable to parse the HTML")}
 	}
-
-	// Navigate to find an html.ElementNode
 	for r.Type != html.ElementNode {
 		switch r.Type {
 		case html.DocumentNode:
@@ -76,7 +69,6 @@ func HTMLParse(s string) Root {
 		case html.CommentNode:
 			r = r.NextSibling
 		}
-
 	}
 	return Root{r, r.Data, nil}
 }
@@ -91,10 +83,8 @@ func (r Root) Find(args ...string) Root {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 		}
-
 		return Root{nil, "", errors.New("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")}
 	}
-
 	return Root{temp, temp.Data, nil}
 }
 
@@ -109,15 +99,12 @@ func (r Root) FindAll(args ...string) []Root {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 		}
-
 		return []Root{}
 	}
-
 	pointers := make([]Root, 0, 10)
 	for i := 0; i < len(temp); i++ {
 		pointers = append(pointers, Root{temp[i], temp[i].Data, nil})
 	}
-
 	return pointers
 }
 
@@ -130,10 +117,8 @@ func (r Root) FindNextSibling() Root {
 		if debug {
 			panic("No next sibling found")
 		}
-
 		return Root{nil, "", errors.New("No next sibling found")}
 	}
-
 	return Root{nextSibling, nextSibling.Data, nil}
 }
 
@@ -146,10 +131,8 @@ func (r Root) FindPrevSibling() Root {
 		if debug {
 			panic("No previous sibling found")
 		}
-
 		return Root{nil, "", errors.New("No previous sibling found")}
 	}
-
 	return Root{prevSibling, prevSibling.Data, nil}
 }
 
@@ -162,14 +145,11 @@ func (r Root) FindNextElementSibling() Root {
 		if debug {
 			panic("No next element sibling found")
 		}
-
 		return Root{nil, "", errors.New("No next element sibling found")}
 	}
-
 	if nextSibling.Type == html.ElementNode {
 		return Root{nextSibling, nextSibling.Data, nil}
 	}
-
 	p := Root{nextSibling, nextSibling.Data, nil}
 	return p.FindNextElementSibling()
 }
@@ -183,14 +163,11 @@ func (r Root) FindPrevElementSibling() Root {
 		if debug {
 			panic("No previous element sibling found")
 		}
-
 		return Root{nil, "", errors.New("No previous element sibling found")}
 	}
-
 	if prevSibling.Type == html.ElementNode {
 		return Root{prevSibling, prevSibling.Data, nil}
 	}
-
 	p := Root{prevSibling, prevSibling.Data, nil}
 	return p.FindPrevElementSibling()
 }
@@ -202,14 +179,11 @@ func (r Root) Attrs() map[string]string {
 		if debug {
 			panic("Not an ElementNode")
 		}
-
 		return nil
 	}
-
 	if len(r.Pointer.Attr) == 0 {
 		return nil
 	}
-
 	return fetch.GetKeyValue(r.Pointer.Attr)
 }
 
@@ -224,13 +198,10 @@ checkNode:
 			if debug {
 				panic("No text node found")
 			}
-
 			return ""
 		}
-
 		goto checkNode
 	}
-
 	if k != nil {
 		r, _ := regexp.Compile(`^\s+$`)
 		if ok := r.MatchString(k.Data); ok {
@@ -239,15 +210,12 @@ checkNode:
 				if debug {
 					panic("No text node found")
 				}
-
 				return ""
 			}
-
 			goto checkNode
 		}
 		return k.Data
 	}
-
 	return ""
 }
 
