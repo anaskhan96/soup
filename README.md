@@ -22,7 +22,7 @@ func Text() string // Full text inside a non-nested tag returned
 func SetDebug(bool) // Sets the debug mode to true or false; false by default
 ```
 
-The struct returned by the functions has two fields :
+The struct returned by the functions has three fields :
 * `Pointer` containing the pointer to the current html node
 * `NodeValue` containing the current html node's value, i.e. the tag name for an ElementNode, or the text in case of a TextNode
 * `Error` containing an error if one occurrs, else `nil` is returned.

@@ -25,6 +25,8 @@ type Root struct {
 var debug = false
 
 // SetDebug sets the debug status
+// Setting this to true causes the panics to be thrown and logged onto the console.
+// Setting this to false causes the errors to be saved in the Error field in the returned struct.
 func SetDebug(d bool) {
 	debug = d
 }
