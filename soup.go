@@ -42,7 +42,6 @@ func Header(n string, v string) {
 // Get returns the HTML returned by the url in string
 func Get(url string) (string, error) {
 	defer fetch.CatchPanic("Get()")
-
 	// Init a new HTTP client
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
@@ -50,16 +49,13 @@ func Get(url string) (string, error) {
 		if debug {
 			panic("Couldn't perform GET request to " + url)
 		}
-
 		return "", errors.New("Couldn't perform GET request to " + url)
 	}
-
 	// Set headers
 	for hName, hValue := range Headers {
 		req.Header.Set(hName, hValue)
 	}
-
-	// Do request
+	// Perform request
 	resp, err := client.Do(req)
 	if err != nil {
 		if debug {
