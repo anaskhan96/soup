@@ -218,23 +218,3 @@ checkNode:
 	}
 	return ""
 }
-
-/* Prettify() function to be looked at later
-func Prettify(r io.ReadCloser) (string, error) {
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return "", err
-	}
-	str := string(bytes)
-	var mod string
-	for i, c := range str {
-		if c == '>' || c == ';' || str[i+1] == '<' {
-			mod += string(c)
-			mod += "\n"
-			continue
-		}
-		mod += string(c)
-	}
-	return mod, nil
-}
-*/
