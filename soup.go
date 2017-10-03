@@ -24,6 +24,9 @@ type Root struct {
 
 var debug = false
 
+// Headers contains all HTTP headers to send
+var Headers = make(map[string]string)
+
 // SetDebug sets the debug status
 // Setting this to true causes the panics to be thrown and logged onto the console.
 // Setting this to false causes the errors to be saved in the Error field in the returned struct.
@@ -31,10 +34,33 @@ func SetDebug(d bool) {
 	debug = d
 }
 
+// Header sets a new HTTP header
+func Header(n string, v string) {
+	Headers[n] = v
+}
+
 // Get returns the HTML returned by the url in string
 func Get(url string) (string, error) {
 	defer fetch.CatchPanic("Get()")
-	resp, err := http.Get(url)
+
+	// Init a new HTTP client
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		if debug {
+			panic("Couldn't perform GET request to " + url)
+		}
+
+		return "", errors.New("Couldn't perform GET request to " + url)
+	}
+
+	// Set headers
+	for hName, hValue := range Headers {
+		req.Header.Set(hName, hValue)
+	}
+
+	// Do request
+	resp, err := client.Do(req)
 	if err != nil {
 		if debug {
 			panic("Couldn't perform GET request to " + url)
