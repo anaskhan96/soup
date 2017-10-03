@@ -10,7 +10,7 @@
 Functions implemented till now :
 ```go
 func Get(string) (string,error) // Takes the url as an argument, returns HTML string
-func Header(string, string) // Takes key,value pair to set as headers for the HTTP request made in Get(), refer to [this](https://github.com/anaskhan96/soup/pull/11) for usage
+func Header(string, string) // Takes key,value pair to set as headers for the HTTP request made in Get(), refer to PR #11 for more usage
 func HTMLParse(string) struct{} // Takes the HTML string as an argument, returns a pointer to the DOM constructed
 func Find([]string) struct{} // Element tag,(attribute key-value pair) as argument, pointer to first occurence returned
 func FindAll([]string) []struct{} // Same as Find(), but pointers to all occurrences returned
