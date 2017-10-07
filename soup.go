@@ -7,11 +7,11 @@ package soup
 import (
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
 
-	"github.com/anaskhan96/soup/fetch"
 	"golang.org/x/net/html"
 )
 
@@ -41,7 +41,7 @@ func Header(n string, v string) {
 
 // Get returns the HTML returned by the url in string
 func Get(url string) (string, error) {
-	defer fetch.CatchPanic("Get()")
+	defer catchPanic("Get()")
 	// Init a new HTTP client
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
@@ -76,7 +76,7 @@ func Get(url string) (string, error) {
 
 // HTMLParse parses the HTML returning a start pointer to the DOM
 func HTMLParse(s string) Root {
-	defer fetch.CatchPanic("HTMLParse()")
+	defer catchPanic("HTMLParse()")
 	r, err := html.Parse(strings.NewReader(s))
 	if err != nil {
 		if debug {
@@ -101,8 +101,8 @@ func HTMLParse(s string) Root {
 // with or without attribute key and value specified,
 // and returns a struct with a pointer to it
 func (r Root) Find(args ...string) Root {
-	defer fetch.CatchPanic("Find()")
-	temp, ok := fetch.FindOnce(r.Pointer, args, false)
+	defer catchPanic("Find()")
+	temp, ok := findOnce(r.Pointer, args, false)
 	if ok == false {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
@@ -117,8 +117,8 @@ func (r Root) Find(args ...string) Root {
 // and returns an array of structs, each having
 // the respective pointers
 func (r Root) FindAll(args ...string) []Root {
-	defer fetch.CatchPanic("FindAll()")
-	temp := fetch.FindAllofem(r.Pointer, args)
+	defer catchPanic("FindAll()")
+	temp := findAllofem(r.Pointer, args)
 	if len(temp) == 0 {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
@@ -135,7 +135,7 @@ func (r Root) FindAll(args ...string) []Root {
 // FindNextSibling finds the next sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindNextSibling() Root {
-	defer fetch.CatchPanic("FindNextSibling()")
+	defer catchPanic("FindNextSibling()")
 	nextSibling := r.Pointer.NextSibling
 	if nextSibling == nil {
 		if debug {
@@ -149,7 +149,7 @@ func (r Root) FindNextSibling() Root {
 // FindPrevSibling finds the previous sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindPrevSibling() Root {
-	defer fetch.CatchPanic("FindPrevSibling()")
+	defer catchPanic("FindPrevSibling()")
 	prevSibling := r.Pointer.PrevSibling
 	if prevSibling == nil {
 		if debug {
@@ -163,7 +163,7 @@ func (r Root) FindPrevSibling() Root {
 // FindNextElementSibling finds the next element sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindNextElementSibling() Root {
-	defer fetch.CatchPanic("FindNextElementSibling()")
+	defer catchPanic("FindNextElementSibling()")
 	nextSibling := r.Pointer.NextSibling
 	if nextSibling == nil {
 		if debug {
@@ -181,7 +181,7 @@ func (r Root) FindNextElementSibling() Root {
 // FindPrevElementSibling finds the previous element sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindPrevElementSibling() Root {
-	defer fetch.CatchPanic("FindPrevElementSibling()")
+	defer catchPanic("FindPrevElementSibling()")
 	prevSibling := r.Pointer.PrevSibling
 	if prevSibling == nil {
 		if debug {
@@ -198,7 +198,7 @@ func (r Root) FindPrevElementSibling() Root {
 
 // Attrs returns a map containing all attributes
 func (r Root) Attrs() map[string]string {
-	defer fetch.CatchPanic("Attrs()")
+	defer catchPanic("Attrs()")
 	if r.Pointer.Type != html.ElementNode {
 		if debug {
 			panic("Not an ElementNode")
@@ -208,12 +208,12 @@ func (r Root) Attrs() map[string]string {
 	if len(r.Pointer.Attr) == 0 {
 		return nil
 	}
-	return fetch.GetKeyValue(r.Pointer.Attr)
+	return getKeyValue(r.Pointer.Attr)
 }
 
 // Text returns the string inside a non-nested element
 func (r Root) Text() string {
-	defer fetch.CatchPanic("Text()")
+	defer catchPanic("Text()")
 	k := r.Pointer.FirstChild
 checkNode:
 	if k.Type != html.TextNode {
@@ -241,4 +241,75 @@ checkNode:
 		return k.Data
 	}
 	return ""
+}
+
+// Using depth first search to find the first occurrence and return
+func findOnce(n *html.Node, args []string, uni bool) (*html.Node, bool) {
+	if uni == true {
+		if n.Type == html.ElementNode && n.Data == args[0] {
+			if len(args) > 1 && len(args) < 4 {
+				for i := 0; i < len(n.Attr); i++ {
+					if n.Attr[i].Key == args[1] && n.Attr[i].Val == args[2] {
+						return n, true
+					}
+				}
+			} else if len(args) == 1 {
+				return n, true
+			}
+		}
+	}
+	uni = true
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		p, q := findOnce(c, args, true)
+		if q != false {
+			return p, q
+		}
+	}
+	return nil, false
+}
+
+// Using depth first search to find all occurrences and return
+func findAllofem(n *html.Node, args []string) []*html.Node {
+	var nodeLinks = make([]*html.Node, 0, 10)
+	var f func(*html.Node, []string, bool)
+	f = func(n *html.Node, args []string, uni bool) {
+		if uni == true {
+			if n.Data == args[0] {
+				if len(args) > 1 && len(args) < 4 {
+					for i := 0; i < len(n.Attr); i++ {
+						if n.Attr[i].Key == args[1] && n.Attr[i].Val == args[2] {
+							nodeLinks = append(nodeLinks, n)
+						}
+					}
+				} else if len(args) == 1 {
+					nodeLinks = append(nodeLinks, n)
+				}
+			}
+		}
+		uni = true
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c, args, true)
+		}
+	}
+	f(n, args, false)
+	return nodeLinks
+}
+
+// Returns a key pair value (like a dictionary) for each attribute
+func getKeyValue(attributes []html.Attribute) map[string]string {
+	var keyvalues = make(map[string]string)
+	for i := 0; i < len(attributes); i++ {
+		_, exists := keyvalues[attributes[i].Key]
+		if exists == false {
+			keyvalues[attributes[i].Key] = attributes[i].Val
+		}
+	}
+	return keyvalues
+}
+
+// Catch panics when they occur
+func catchPanic(fnName string) {
+	if r := recover(); r != nil {
+		log.Println("Error occurred in", fnName, ":", r)
+	}
 }
