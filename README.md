@@ -61,4 +61,4 @@ func main() {
 ```
 
 ## Contributions
-This package was developed in my free time. However, contributions from everybody in the community are welcome, to make it a better web scraper. If you feel there should be a particular new feature or function in the package, feel free to open up a new issue or pull request.
+This package was developed in my free time. However, contributions from everybody in the community are welcome, to make it a better web scraper. If you think there should be a particular feature or function included in the package, feel free to open up a new issue or pull request.
