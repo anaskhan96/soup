@@ -26,6 +26,10 @@ var debug = false
 // Headers contains all HTTP headers to send
 var Headers = make(map[string]string)
 
+
+// Cookies contains all HTTP cookies to send
+var Cookies = make(map[string]string)
+
 // SetDebug sets the debug status
 // Setting this to true causes the panics to be thrown and logged onto the console.
 // Setting this to false causes the errors to be saved in the Error field in the returned struct.
@@ -36,6 +40,10 @@ func SetDebug(d bool) {
 // Header sets a new HTTP header
 func Header(n string, v string) {
 	Headers[n] = v
+}
+
+func Cookie(n string, v string) {
+	Cookies[n] = v
 }
 
 // Get returns the HTML returned by the url in string
@@ -52,6 +60,13 @@ func Get(url string) (string, error) {
 	// Set headers
 	for hName, hValue := range Headers {
 		req.Header.Set(hName, hValue)
+	}
+	// Set cookies
+	for cName, cValue := range Cookies {
+		req.AddCookie(&http.Cookie{
+			Name: cName,
+			Value: cValue,
+		})
 	}
 	// Perform request
 	resp, err := client.Do(req)
