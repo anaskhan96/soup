@@ -26,6 +26,7 @@ const testHTML = `
     </table>
     <div id="0">
       <div id="1">Just two divs peacing out</div>
+      <a class="message input-message">heyy</a>
     </div>
     check
     <div id="2">One more</div>
@@ -61,6 +62,11 @@ func TestFind(t *testing.T) {
 	actual = doc.Find("div").Find("div").Text()
 	if !reflect.DeepEqual(actual, "Just two divs peacing out") {
 		t.Error("Instead of `Just two divs peacing out`, got", actual)
+	}
+	// Find using main class
+	actual = doc.Find("a", "class", "message").Text()
+	if !reflect.DeepEqual(actual, "heyy") {
+		t.Error("Instead of `heyy`, got", actual)
 	}
 }
 
