@@ -45,16 +45,14 @@ func Cookie(n string, v string) {
 	Cookies[n] = v
 }
 
-// Get returns the HTML returned by the url in string
-func Get(url string) (string, error) {
-	// Init a new HTTP client
-	client := &http.Client{}
+// GetWithClient returns the HTML returned by the url using a provided HTTP client
+func GetWithClient(url string, client *http.Client) (string, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		if debug {
 			panic("Couldn't perform GET request to " + url)
 		}
-		return "", errors.New("Couldn't perform GET request to " + url)
+		return "", errors.New("couldn't perform GET request to " + url)
 	}
 	// Set headers
 	for hName, hValue := range Headers {
@@ -73,7 +71,7 @@ func Get(url string) (string, error) {
 		if debug {
 			panic("Couldn't perform GET request to " + url)
 		}
-		return "", errors.New("Couldn't perform GET request to " + url)
+		return "", errors.New("couldn't perform GET request to " + url)
 	}
 	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
@@ -81,9 +79,16 @@ func Get(url string) (string, error) {
 		if debug {
 			panic("Unable to read the response body")
 		}
-		return "", errors.New("Unable to read the response body")
+		return "", errors.New("unable to read the response body")
 	}
 	return string(bytes), nil
+}
+
+// Get returns the HTML returned by the url in string using the default HTTP client
+func Get(url string) (string, error) {
+	// Init a new HTTP client
+	client := &http.Client{}
+	return GetWithClient(url, client)
 }
 
 // HTMLParse parses the HTML returning a start pointer to the DOM
@@ -93,7 +98,7 @@ func HTMLParse(s string) Root {
 		if debug {
 			panic("Unable to parse the HTML")
 		}
-		return Root{nil, "", errors.New("Unable to parse the HTML")}
+		return Root{nil, "", errors.New("unable to parse the HTML")}
 	}
 	for r.Type != html.ElementNode {
 		switch r.Type {
@@ -117,7 +122,7 @@ func (r Root) Find(args ...string) Root {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 		}
-		return Root{nil, "", errors.New("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")}
+		return Root{nil, "", errors.New("element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")}
 	}
 	return Root{temp, temp.Data, nil}
 }
@@ -149,7 +154,7 @@ func (r Root) FindNextSibling() Root {
 		if debug {
 			panic("No next sibling found")
 		}
-		return Root{nil, "", errors.New("No next sibling found")}
+		return Root{nil, "", errors.New("no next sibling found")}
 	}
 	return Root{nextSibling, nextSibling.Data, nil}
 }
@@ -162,7 +167,7 @@ func (r Root) FindPrevSibling() Root {
 		if debug {
 			panic("No previous sibling found")
 		}
-		return Root{nil, "", errors.New("No previous sibling found")}
+		return Root{nil, "", errors.New("no previous sibling found")}
 	}
 	return Root{prevSibling, prevSibling.Data, nil}
 }
@@ -175,7 +180,7 @@ func (r Root) FindNextElementSibling() Root {
 		if debug {
 			panic("No next element sibling found")
 		}
-		return Root{nil, "", errors.New("No next element sibling found")}
+		return Root{nil, "", errors.New("no next element sibling found")}
 	}
 	if nextSibling.Type == html.ElementNode {
 		return Root{nextSibling, nextSibling.Data, nil}
@@ -192,7 +197,7 @@ func (r Root) FindPrevElementSibling() Root {
 		if debug {
 			panic("No previous element sibling found")
 		}
-		return Root{nil, "", errors.New("No previous element sibling found")}
+		return Root{nil, "", errors.New("no previous element sibling found")}
 	}
 	if prevSibling.Type == html.ElementNode {
 		return Root{prevSibling, prevSibling.Data, nil}
