@@ -26,6 +26,7 @@ var debug = false
 // Headers contains all HTTP headers to send
 var Headers = make(map[string]string)
 
+
 // Cookies contains all HTTP cookies to send
 var Cookies = make(map[string]string)
 
@@ -63,7 +64,7 @@ func Get(url string) (string, error) {
 	// Set cookies
 	for cName, cValue := range Cookies {
 		req.AddCookie(&http.Cookie{
-			Name:  cName,
+			Name: cName,
 			Value: cValue,
 		})
 	}
@@ -252,7 +253,7 @@ func findOnce(n *html.Node, args []string, uni bool) (*html.Node, bool) {
 		if n.Type == html.ElementNode && n.Data == args[0] {
 			if len(args) > 1 && len(args) < 4 {
 				for i := 0; i < len(n.Attr); i++ {
-					if n.Attr[i].Key == args[1] && strings.Fields(n.Attr[i].Val)[0] == args[2] {
+					if n.Attr[i].Key == args[1] && n.Attr[i].Val == args[2] {
 						return n, true
 					}
 				}
@@ -280,7 +281,7 @@ func findAllofem(n *html.Node, args []string) []*html.Node {
 			if n.Data == args[0] {
 				if len(args) > 1 && len(args) < 4 {
 					for i := 0; i < len(n.Attr); i++ {
-						if n.Attr[i].Key == args[1] && strings.Fields(n.Attr[i].Val)[0] == args[2] {
+						if n.Attr[i].Key == args[1] && n.Attr[i].Val == args[2] {
 							nodeLinks = append(nodeLinks, n)
 						}
 					}
