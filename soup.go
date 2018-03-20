@@ -147,7 +147,7 @@ func (r Root) FindAll(args ...string) []Root {
 }
 
 // FindStrict finds the first occurrence of the given tag name
-// only if all provided attribute's values are exists
+// only if all the values of the provided attribute are an exact match
 func (r Root) FindStrict(args ...string) Root {
 	temp, ok := findOnce(r.Pointer, args, false, true)
 	if ok == false {
@@ -160,7 +160,7 @@ func (r Root) FindStrict(args ...string) Root {
 }
 
 // FindAllStrict finds all occurrences of the given tag name
-// only if all provided attribute's values are exists
+// only if all the values of the provided attribute are an exact match
 func (r Root) FindAllStrict(args ...string) []Root {
 	temp := findAllofem(r.Pointer, args, true)
 	if len(temp) == 0 {
@@ -341,10 +341,14 @@ func findAllofem(n *html.Node, args []string, strict bool) []*html.Node {
 	return nodeLinks
 }
 
+// attributeAndValueEquals reports when the html.Attribute attr has the same attribute name and value as from
+// provided arguments
 func attributeAndValueEquals(attr html.Attribute, attribute, value string) bool {
 	return attr.Key == attribute && attr.Val == value
 }
 
+// attributeContainsValue reports when the html.Attribute attr has the same attribute name as from provided
+// attribute argument and compares if it has the same value in its values parameter
 func attributeContainsValue(attr html.Attribute, attribute, value string) bool {
 	if attr.Key == attribute {
 		for _, attrVal := range strings.Fields(attr.Val) {
