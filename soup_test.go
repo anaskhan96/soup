@@ -139,3 +139,31 @@ func TestFindBySingleClass(t *testing.T) {
 		t.Errorf("Wrong element returned: %s", actual.Text())
 	}
 }
+
+func TestFindAllStrict(t *testing.T) {
+	actual := multipleClasses.FindAllStrict("div", "class", "first second")
+	if len(actual) != 2 {
+		t.Errorf("Expected 2 elements to be returned. Actual: %d", len(actual))
+	}
+	actual = multipleClasses.FindAllStrict("div", "class", "first third second")
+	if len(actual) != 0 {
+		t.Errorf("0 elements should be returned")
+	}
+
+	actual = multipleClasses.FindAllStrict("div", "class", "second first third")
+	if len(actual) != 1 {
+		t.Errorf("Single item should be returned")
+	}
+}
+
+func TestFindStrict(t *testing.T) {
+	actual := multipleClasses.FindStrict("div", "class", "first")
+	if actual.Text() != "Single class" {
+		t.Errorf("Wrong element returned: %s", actual.Text())
+	}
+
+	actual = multipleClasses.FindStrict("div", "class", "third")
+	if actual.Error == nil {
+		t.Errorf("Element with class \"third\" should not be returned in strict mode")
+	}
+}

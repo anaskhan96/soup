@@ -139,7 +139,37 @@ func (r Root) FindAll(args ...string) []Root {
 		}
 		return []Root{}
 	}
-	pointers := make([]Root, 0, 10)
+	pointers := make([]Root, 0, len(temp))
+	for i := 0; i < len(temp); i++ {
+		pointers = append(pointers, Root{temp[i], temp[i].Data, nil})
+	}
+	return pointers
+}
+
+// FindStrict finds the first occurrence of the given tag name
+// only if all provided attribute's values are exists
+func (r Root) FindStrict(args ...string) Root {
+	temp, ok := findOnce(r.Pointer, args, false, true)
+	if ok == false {
+		if debug {
+			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
+		}
+		return Root{nil, "", errors.New("element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")}
+	}
+	return Root{temp, temp.Data, nil}
+}
+
+// FindAllStrict finds all occurrences of the given tag name
+// only if all provided attribute's values are exists
+func (r Root) FindAllStrict(args ...string) []Root {
+	temp := findAllofem(r.Pointer, args, true)
+	if len(temp) == 0 {
+		if debug {
+			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
+		}
+		return []Root{}
+	}
+	pointers := make([]Root, 0, len(temp))
 	for i := 0; i < len(temp); i++ {
 		pointers = append(pointers, Root{temp[i], temp[i].Data, nil})
 	}
