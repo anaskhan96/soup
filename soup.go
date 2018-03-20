@@ -26,7 +26,6 @@ var debug = false
 // Headers contains all HTTP headers to send
 var Headers = make(map[string]string)
 
-
 // Cookies contains all HTTP cookies to send
 var Cookies = make(map[string]string)
 
@@ -62,7 +61,7 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 	// Set cookies
 	for cName, cValue := range Cookies {
 		req.AddCookie(&http.Cookie{
-			Name: cName,
+			Name:  cName,
 			Value: cValue,
 		})
 	}
@@ -118,7 +117,7 @@ func HTMLParse(s string) Root {
 // with or without attribute key and value specified,
 // and returns a struct with a pointer to it
 func (r Root) Find(args ...string) Root {
-	temp, ok := findOnce(r.Pointer, args, false)
+	temp, ok := findOnce(r.Pointer, args, false, false)
 	if ok == false {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
@@ -133,7 +132,7 @@ func (r Root) Find(args ...string) Root {
 // and returns an array of structs, each having
 // the respective pointers
 func (r Root) FindAll(args ...string) []Root {
-	temp := findAllofem(r.Pointer, args)
+	temp := findAllofem(r.Pointer, args, false)
 	if len(temp) == 0 {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
@@ -253,12 +252,16 @@ checkNode:
 }
 
 // Using depth first search to find the first occurrence and return
-func findOnce(n *html.Node, args []string, uni bool) (*html.Node, bool) {
+func findOnce(n *html.Node, args []string, uni bool, strict bool) (*html.Node, bool) {
 	if uni == true {
 		if n.Type == html.ElementNode && n.Data == args[0] {
 			if len(args) > 1 && len(args) < 4 {
 				for i := 0; i < len(n.Attr); i++ {
-					if n.Attr[i].Key == args[1] && n.Attr[i].Val == args[2] {
+					attr := n.Attr[i]
+					searchAttrName := args[1]
+					searchAttrVal := args[2]
+					if (strict && attributeAndValueEquals(attr, searchAttrName, searchAttrVal)) ||
+						(!strict && attributeContainsValue(attr, searchAttrName, searchAttrVal)) {
 						return n, true
 					}
 				}
@@ -269,7 +272,7 @@ func findOnce(n *html.Node, args []string, uni bool) (*html.Node, bool) {
 	}
 	uni = true
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		p, q := findOnce(c, args, true)
+		p, q := findOnce(c, args, true, strict)
 		if q != false {
 			return p, q
 		}
@@ -278,7 +281,7 @@ func findOnce(n *html.Node, args []string, uni bool) (*html.Node, bool) {
 }
 
 // Using depth first search to find all occurrences and return
-func findAllofem(n *html.Node, args []string) []*html.Node {
+func findAllofem(n *html.Node, args []string, strict bool) []*html.Node {
 	var nodeLinks = make([]*html.Node, 0, 10)
 	var f func(*html.Node, []string, bool)
 	f = func(n *html.Node, args []string, uni bool) {
@@ -286,7 +289,11 @@ func findAllofem(n *html.Node, args []string) []*html.Node {
 			if n.Data == args[0] {
 				if len(args) > 1 && len(args) < 4 {
 					for i := 0; i < len(n.Attr); i++ {
-						if n.Attr[i].Key == args[1] && n.Attr[i].Val == args[2] {
+						attr := n.Attr[i]
+						searchAttrName := args[1]
+						searchAttrVal := args[2]
+						if (strict && attributeAndValueEquals(attr, searchAttrName, searchAttrVal)) ||
+							(!strict && attributeContainsValue(attr, searchAttrName, searchAttrVal)) {
 							nodeLinks = append(nodeLinks, n)
 						}
 					}
@@ -302,6 +309,21 @@ func findAllofem(n *html.Node, args []string) []*html.Node {
 	}
 	f(n, args, false)
 	return nodeLinks
+}
+
+func attributeAndValueEquals(attr html.Attribute, attribute, value string) bool {
+	return attr.Key == attribute && attr.Val == value
+}
+
+func attributeContainsValue(attr html.Attribute, attribute, value string) bool {
+	if attr.Key == attribute {
+		for _, attrVal := range strings.Fields(attr.Val) {
+			if attrVal == value {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // Returns a key pair value (like a dictionary) for each attribute

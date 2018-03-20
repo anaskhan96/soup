@@ -44,7 +44,26 @@ const testHTML = `
 </html>
 `
 
+const multipleClassesHTML = `
+<html>
+	<head>
+		<title>Sample Application</title>
+	</head>
+	<body>
+		<div class="first second">Multiple classes</div>
+		<div class="first">Single class</div>
+		<div class="second first third">Multiple classes inorder</div>
+		<div>
+			<div class="first">Inner single class</div>
+			<div class="first second">Inner multiple classes</div>
+			<div class="second first">Inner multiple classes inorder</div>
+		</div>
+	</body>
+</html>
+`
+
 var doc = HTMLParse(testHTML)
+var multipleClasses = HTMLParse(multipleClassesHTML)
 
 func TestFind(t *testing.T) {
 	// Find() and Attrs()
@@ -96,5 +115,27 @@ func TestFindAll(t *testing.T) {
 		if !reflect.DeepEqual(actual, i) {
 			t.Error("Instead of", i, "got", actual)
 		}
+	}
+}
+
+func TestFindAllBySingleClass(t *testing.T) {
+	actual := multipleClasses.FindAll("div", "class", "first")
+	if len(actual) != 6 {
+		t.Errorf("Expected 6 elements to be returned. Actual: %d", len(actual))
+	}
+	actual = multipleClasses.FindAll("div", "class", "third")
+	if len(actual) != 1 {
+		t.Errorf("Expected 1 element to be returned. Actual: %d", len(actual))
+	}
+}
+
+func TestFindBySingleClass(t *testing.T) {
+	actual := multipleClasses.Find("div", "class", "first")
+	if actual.Text() != "Multiple classes" {
+		t.Errorf("Wrong element returned: %s", actual.Text())
+	}
+	actual = multipleClasses.Find("div", "class", "third")
+	if actual.Text() != "Multiple classes inorder" {
+		t.Errorf("Wrong element returned: %s", actual.Text())
 	}
 }
