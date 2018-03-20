@@ -12,6 +12,7 @@ Exported variables and functions implemented till now :
 var Headers map[string]string // Set headers as a map of key-value pairs, an alternative to calling Header() individually
 var Cookies map[string]string // Set cookies as a map of key-value  pairs, an alternative to calling Cookie() individually
 func Get(string) (string,error) // Takes the url as an argument, returns HTML string
+func GetWithClient(string, *http.Client) // Takes the url and a custom HTTP client as arguments, returns HTML string
 func Header(string, string) // Takes key,value pair to set as headers for the HTTP request made in Get()
 func Cookie(string, string) // Takes key, value pair to set as cookies to be sent with the HTTP request in Get()
 func HTMLParse(string) Root // Takes the HTML string as an argument, returns a pointer to the DOM constructed
