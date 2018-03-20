@@ -17,6 +17,8 @@ func Cookie(string, string) // Takes key, value pair to set as cookies to be sen
 func HTMLParse(string) Root // Takes the HTML string as an argument, returns a pointer to the DOM constructed
 func Find([]string) Root // Element tag,(attribute key-value pair) as argument, pointer to first occurence returned
 func FindAll([]string) []Root // Same as Find(), but pointers to all occurrences returned
+func FindStrict([]string) Root //  Element tag,(attribute key-value pair) as argument, pointer to first occurence returned with exact matching values
+func FindAllStrict([]string) []Root // Same as FindStrict(), but pointers to all occurrences returned
 func FindNextSibling() Root // Pointer to the next sibling of the Element in the DOM returned
 func FindNextElementSibling() Root // Pointer to the next element sibling of the Element in the DOM returned
 func FindPrevSibling() Root // Pointer to the previous sibling of the Element in the DOM returned
