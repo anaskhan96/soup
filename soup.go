@@ -254,7 +254,7 @@ func (r Root) Attrs() map[string]string {
 func (r Root) Text() string {
 	k := r.Pointer.FirstChild
 checkNode:
-	if k.Type != html.TextNode {
+	if k != nil && k.Type != html.TextNode {
 		k = k.NextSibling
 		if k == nil {
 			if debug {
