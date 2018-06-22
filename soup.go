@@ -236,6 +236,17 @@ func (r Root) FindPrevElementSibling() Root {
 	return p.FindPrevElementSibling()
 }
 
+// Children retuns all direct children of this DOME element.
+func (r Root) Children() []Root {
+	child := r.Pointer.FirstChild
+	var children []Root
+	for child != nil {
+		children = append(children, Root{child, child.Data, nil})
+		child = child.NextSibling
+	}
+	return children
+}
+
 // Attrs returns a map containing all attributes
 func (r Root) Attrs() map[string]string {
 	if r.Pointer.Type != html.ElementNode {
