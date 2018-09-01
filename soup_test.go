@@ -167,3 +167,11 @@ func TestFindStrict(t *testing.T) {
 		t.Errorf("Element with class \"third\" should not be returned in strict mode")
 	}
 }
+
+func TestText(t *testing.T) {
+	li := doc.Find("ul").Find("li")
+
+	if li.Text() != "To a JSP page" {
+		t.Errorf("Wrong text: %s", li.Text())
+	}
+}
