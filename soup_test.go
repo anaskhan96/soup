@@ -32,7 +32,7 @@ const testHTML = `
     <p>This is the home page for the HelloWorld Web application. </p>
     <p>To prove that they work, you can execute either of the following links:
     <ul>
-      <li>To a <a href="hello.jsp">JSP page</a></li>
+      <li>To a <a href="hello.jsp">JSP page</a> right?</li>
       <li>To a <a href="hello">servlet</a></li>
     </ul>
     </p>
@@ -169,9 +169,18 @@ func TestFindStrict(t *testing.T) {
 }
 
 func TestText(t *testing.T) {
+	// <li>To a <a href="hello.jsp">JSP page</a> right?</li>
 	li := doc.Find("ul").Find("li")
 
-	if li.Text() != "To a JSP page" {
+	if li.Text() != "To a " {
 		t.Errorf("Wrong text: %s", li.Text())
+	}
+}
+func TestFullText(t *testing.T) {
+	// <li>To a <a href="hello.jsp">JSP page</a> right?</li>
+	li := doc.Find("ul").Find("li")
+
+	if li.FullText() != "To a JSP page right?" {
+		t.Errorf("Wrong text: %s", li.FullText())
 	}
 }

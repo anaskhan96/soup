@@ -5,6 +5,7 @@ keeping it as similar as possible to BeautifulSoup
 package soup
 
 import (
+	"bytes"
 	"errors"
 	"io/ioutil"
 	"net/http"
@@ -290,6 +291,28 @@ checkNode:
 		return k.Data
 	}
 	return ""
+}
+
+// FullText returns the string inside even a nested element
+func (r Root) FullText() string {
+	var buf bytes.Buffer
+
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.TextNode {
+			buf.WriteString(n.Data)
+		}
+		if n.Type == html.ElementNode {
+			f(n.FirstChild)
+		}
+		if n.NextSibling != nil {
+			f(n.NextSibling)
+		}
+	}
+
+	f(r.Pointer.FirstChild)
+
+	return buf.String()
 }
 
 // Using depth first search to find the first occurrence and return
