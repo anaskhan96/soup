@@ -24,6 +24,7 @@ func FindNextSibling() Root // Pointer to the next sibling of the Element in the
 func FindNextElementSibling() Root // Pointer to the next element sibling of the Element in the DOM returned
 func FindPrevSibling() Root // Pointer to the previous sibling of the Element in the DOM returned
 func FindPrevElementSibling() Root // Pointer to the previous element sibling of the Element in the DOM returned
+func Children() []Root // Find all direct children of this DOM element
 func Attrs() map[string]string // Map returned with all the attributes of the Element as lookup to their respective values
 func Text() string // Full text inside a non-nested tag returned
 func SetDebug(bool) // Sets the debug mode to true or false; false by default

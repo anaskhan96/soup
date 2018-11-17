@@ -5,6 +5,7 @@ keeping it as similar as possible to BeautifulSoup
 package soup
 
 import (
+	"bytes"
 	"errors"
 	"io/ioutil"
 	"net/http"
@@ -236,6 +237,17 @@ func (r Root) FindPrevElementSibling() Root {
 	return p.FindPrevElementSibling()
 }
 
+// Children retuns all direct children of this DOME element.
+func (r Root) Children() []Root {
+	child := r.Pointer.FirstChild
+	var children []Root
+	for child != nil {
+		children = append(children, Root{child, child.Data, nil})
+		child = child.NextSibling
+	}
+	return children
+}
+
 // Attrs returns a map containing all attributes
 func (r Root) Attrs() map[string]string {
 	if r.Pointer.Type != html.ElementNode {
@@ -279,6 +291,28 @@ checkNode:
 		return k.Data
 	}
 	return ""
+}
+
+// FullText returns the string inside even a nested element
+func (r Root) FullText() string {
+	var buf bytes.Buffer
+
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.TextNode {
+			buf.WriteString(n.Data)
+		}
+		if n.Type == html.ElementNode {
+			f(n.FirstChild)
+		}
+		if n.NextSibling != nil {
+			f(n.NextSibling)
+		}
+	}
+
+	f(r.Pointer.FirstChild)
+
+	return buf.String()
 }
 
 // Using depth first search to find the first occurrence and return
