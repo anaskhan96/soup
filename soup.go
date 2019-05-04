@@ -299,6 +299,9 @@ func (r Root) FullText() string {
 
 	var f func(*html.Node)
 	f = func(n *html.Node) {
+		if n == nil {
+			return
+		}
 		if n.Type == html.TextNode {
 			buf.WriteString(n.Data)
 		}
