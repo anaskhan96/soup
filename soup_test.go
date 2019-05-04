@@ -39,7 +39,9 @@ const testHTML = `
     <div id="3">
       <div id="4">Last one</div>
     </div>
-
+    <div id="5">
+        <h1><span></span></h1>
+    </div>
   </body>
 </html>
 `
@@ -182,5 +184,14 @@ func TestFullText(t *testing.T) {
 
 	if li.FullText() != "To a JSP page right?" {
 		t.Errorf("Wrong text: %s", li.FullText())
+	}
+}
+
+func TestFullTextEmpty(t *testing.T) {
+    // <div id="5"><h1><span></span></h1></div>
+    h1 := doc.Find("div", "id", "5").Find("h1")
+
+    if h1.FullText() != "" {
+		t.Errorf("Wrong text: %s", h1.FullText())
 	}
 }
