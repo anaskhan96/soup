@@ -318,10 +318,14 @@ func (r Root) FullText() string {
 	return buf.String()
 }
 
+func matchElementName(n *html.Node, name string) bool {
+	return name == "" || name == n.Data
+}
+
 // Using depth first search to find the first occurrence and return
 func findOnce(n *html.Node, args []string, uni bool, strict bool) (*html.Node, bool) {
 	if uni == true {
-		if n.Type == html.ElementNode && n.Data == args[0] {
+		if n.Type == html.ElementNode && matchElementName(n, args[0]) {
 			if len(args) > 1 && len(args) < 4 {
 				for i := 0; i < len(n.Attr); i++ {
 					attr := n.Attr[i]
@@ -353,7 +357,7 @@ func findAllofem(n *html.Node, args []string, strict bool) []*html.Node {
 	var f func(*html.Node, []string, bool)
 	f = func(n *html.Node, args []string, uni bool) {
 		if uni == true {
-			if n.Data == args[0] {
+			if matchElementName(n, args[0]) {
 				if len(args) > 1 && len(args) < 4 {
 					for i := 0; i < len(n.Attr); i++ {
 						attr := n.Attr[i]

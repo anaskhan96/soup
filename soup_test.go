@@ -83,6 +83,16 @@ func TestFind(t *testing.T) {
 	if !reflect.DeepEqual(actual, "Just two divs peacing out") {
 		t.Error("Instead of `Just two divs peacing out`, got", actual)
 	}
+	// Find("") for any
+	actual = multipleClasses.Find("body").Find("").Text()
+	if !reflect.DeepEqual(actual, "Multiple classes") {
+		t.Error("Instead of `Multiple classes`, got", actual)
+	}
+	// Find("") with attributes
+	actual = doc.Find("", "id", "4").Text()
+	if !reflect.DeepEqual(actual, "Last one") {
+		t.Error("Instead of `Last one`, got", actual)
+	}
 }
 
 func TestFindNextPrevElement(t *testing.T) {
@@ -126,6 +136,13 @@ func TestFindAllBySingleClass(t *testing.T) {
 		t.Errorf("Expected 6 elements to be returned. Actual: %d", len(actual))
 	}
 	actual = multipleClasses.FindAll("div", "class", "third")
+	if len(actual) != 1 {
+		t.Errorf("Expected 1 element to be returned. Actual: %d", len(actual))
+	}
+}
+
+func TestFindAllByAttribute(t *testing.T) {
+	actual := doc.FindAll("", "id", "2")
 	if len(actual) != 1 {
 		t.Errorf("Expected 1 element to be returned. Actual: %d", len(actual))
 	}
