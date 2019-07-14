@@ -194,6 +194,12 @@ func TestText(t *testing.T) {
 	if li.Text() != "To a " {
 		t.Errorf("Wrong text: %s", li.Text())
 	}
+
+	div := doc.Find("div", "id", "5")
+
+	if div.Text() != "" {
+		t.Errorf("Wrong Text: %s", div.Text())
+	}
 }
 func TestFullText(t *testing.T) {
 	// <li>To a <a href="hello.jsp">JSP page</a> right?</li>
@@ -205,10 +211,10 @@ func TestFullText(t *testing.T) {
 }
 
 func TestFullTextEmpty(t *testing.T) {
-    // <div id="5"><h1><span></span></h1></div>
-    h1 := doc.Find("div", "id", "5").Find("h1")
+	// <div id="5"><h1><span></span></h1></div>
+	h1 := doc.Find("div", "id", "5").Find("h1")
 
-    if h1.FullText() != "" {
+	if h1.FullText() != "" {
 		t.Errorf("Wrong text: %s", h1.FullText())
 	}
 }
