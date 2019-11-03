@@ -391,14 +391,22 @@ func attributeAndValueEquals(attr html.Attribute, attribute, value string) bool 
 // attributeContainsValue reports when the html.Attribute attr has the same attribute name as from provided
 // attribute argument and compares if it has the same value in its values parameter
 func attributeContainsValue(attr html.Attribute, attribute, value string) bool {
-	if attr.Key == attribute {
+	// Go through all values being searched for looking for match
+	for _, searchVal := range strings.Fields(value) {
+		// Look for match in all values of HTML attr
+		found := false
 		for _, attrVal := range strings.Fields(attr.Val) {
-			if attrVal == value {
-				return true
+			if attrVal == searchVal {
+				found = true
 			}
 		}
+		// If no match found return false
+		if !found {
+			return false
+		}
 	}
-	return false
+	// Matches found for all search values so return true
+	return true
 }
 
 // Returns a key pair value (like a dictionary) for each attribute
