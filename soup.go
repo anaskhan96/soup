@@ -7,6 +7,7 @@ package soup
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -15,20 +16,42 @@ import (
 	"golang.org/x/net/html"
 )
 
-// Root is a structure containing a pointer to an html node, the node value, and an error variable to return an error if occurred
+var (
+	// ErrUnableToParse will be returned when the HTML could not be parsed
+	ErrUnableToParse = errors.New("unable to parse the HTML")
+	// ErrElementNotFound will be returned when element was not found
+	ErrElementNotFound = errors.New("element not found")
+	// ErrNoNextSibling will be returned when no next sibling can be found
+	ErrNoNextSibling = errors.New("no next sibling found")
+	// ErrNoPreviousSibling will be returned when no previous sibling can be found
+	ErrNoPreviousSibling = errors.New("no previous sibling found")
+	// ErrNoNextElementSibling will be returned when no next element sibling can be found
+	ErrNoNextElementSibling = errors.New("no next element sibling found")
+	// ErrNoPreviousElementSibling will be returned when no previous element sibling can be found
+	ErrNoPreviousElementSibling = errors.New("no previous element sibling found")
+)
+
+// Root is a structure containing a pointer to an html node, the node value, and an error variable to return an error if one occurred
 type Root struct {
 	Pointer   *html.Node
 	NodeValue string
 	Error     error
+	// ErrorDetails will contain templated error information (if applicable) if Error != nil
+	ErrorDetails string
 }
 
-var debug = false
+// Init a new HTTP client for use when the client doesn't want to use their own.
+var (
+	defaultClient = &http.Client{}
 
-// Headers contains all HTTP headers to send
-var Headers = make(map[string]string)
+	debug = false
 
-// Cookies contains all HTTP cookies to send
-var Cookies = make(map[string]string)
+	// Headers contains all HTTP headers to send
+	Headers = make(map[string]string)
+
+	// Cookies contains all HTTP cookies to send
+	Cookies = make(map[string]string)
+)
 
 // SetDebug sets the debug status
 // Setting this to true causes the panics to be thrown and logged onto the console.
@@ -42,6 +65,7 @@ func Header(n string, v string) {
 	Headers[n] = v
 }
 
+// Cookie sets a cookie for http requests
 func Cookie(n string, v string) {
 	Cookies[n] = v
 }
@@ -53,7 +77,7 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 		if debug {
 			panic("Couldn't perform GET request to " + url)
 		}
-		return "", errors.New("couldn't perform GET request to " + url)
+		return "", errors.New("error creating get request to " + url)
 	}
 	// Set headers
 	for hName, hValue := range Headers {
@@ -87,9 +111,7 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 
 // Get returns the HTML returned by the url in string using the default HTTP client
 func Get(url string) (string, error) {
-	// Init a new HTTP client
-	client := &http.Client{}
-	return GetWithClient(url, client)
+	return GetWithClient(url, defaultClient)
 }
 
 // HTMLParse parses the HTML returning a start pointer to the DOM
@@ -99,7 +121,7 @@ func HTMLParse(s string) Root {
 		if debug {
 			panic("Unable to parse the HTML")
 		}
-		return Root{nil, "", errors.New("unable to parse the HTML")}
+		return Root{Error: ErrUnableToParse, ErrorDetails: err.Error()}
 	}
 	for r.Type != html.ElementNode {
 		switch r.Type {
@@ -111,7 +133,7 @@ func HTMLParse(s string) Root {
 			r = r.NextSibling
 		}
 	}
-	return Root{r, r.Data, nil}
+	return Root{Pointer: r, NodeValue: r.Data}
 }
 
 // Find finds the first occurrence of the given tag name,
@@ -123,9 +145,9 @@ func (r Root) Find(args ...string) Root {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 		}
-		return Root{nil, "", errors.New("element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")}
+		return Root{Error: ErrElementNotFound, ErrorDetails: fmt.Sprintf("element `%s` with attributes `%s` not found", args[0], strings.Join(args[1:], " "))}
 	}
-	return Root{temp, temp.Data, nil}
+	return Root{Pointer: temp, NodeValue: temp.Data}
 }
 
 // FindAll finds all occurrences of the given tag name,
@@ -142,7 +164,7 @@ func (r Root) FindAll(args ...string) []Root {
 	}
 	pointers := make([]Root, 0, len(temp))
 	for i := 0; i < len(temp); i++ {
-		pointers = append(pointers, Root{temp[i], temp[i].Data, nil})
+		pointers = append(pointers, Root{Pointer: temp[i], NodeValue: temp[i].Data})
 	}
 	return pointers
 }
@@ -155,9 +177,9 @@ func (r Root) FindStrict(args ...string) Root {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 		}
-		return Root{nil, "", errors.New("element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")}
+		return Root{nil, "", ErrElementNotFound, fmt.Sprintf("element `%s` with attributes `%s` not found", args[0], strings.Join(args[1:], " "))}
 	}
-	return Root{temp, temp.Data, nil}
+	return Root{Pointer: temp, NodeValue: temp.Data}
 }
 
 // FindAllStrict finds all occurrences of the given tag name
@@ -172,7 +194,7 @@ func (r Root) FindAllStrict(args ...string) []Root {
 	}
 	pointers := make([]Root, 0, len(temp))
 	for i := 0; i < len(temp); i++ {
-		pointers = append(pointers, Root{temp[i], temp[i].Data, nil})
+		pointers = append(pointers, Root{Pointer: temp[i], NodeValue: temp[i].Data})
 	}
 	return pointers
 }
@@ -185,9 +207,9 @@ func (r Root) FindNextSibling() Root {
 		if debug {
 			panic("No next sibling found")
 		}
-		return Root{nil, "", errors.New("no next sibling found")}
+		return Root{Error: ErrNoNextSibling}
 	}
-	return Root{nextSibling, nextSibling.Data, nil}
+	return Root{Pointer: nextSibling, NodeValue: nextSibling.Data}
 }
 
 // FindPrevSibling finds the previous sibling of the pointer in the DOM
@@ -198,9 +220,10 @@ func (r Root) FindPrevSibling() Root {
 		if debug {
 			panic("No previous sibling found")
 		}
-		return Root{nil, "", errors.New("no previous sibling found")}
+
+		return Root{Error: ErrNoPreviousSibling}
 	}
-	return Root{prevSibling, prevSibling.Data, nil}
+	return Root{Pointer: prevSibling, NodeValue: prevSibling.Data}
 }
 
 // FindNextElementSibling finds the next element sibling of the pointer in the DOM
@@ -211,12 +234,12 @@ func (r Root) FindNextElementSibling() Root {
 		if debug {
 			panic("No next element sibling found")
 		}
-		return Root{nil, "", errors.New("no next element sibling found")}
+		return Root{Error: ErrNoNextElementSibling}
 	}
 	if nextSibling.Type == html.ElementNode {
-		return Root{nextSibling, nextSibling.Data, nil}
+		return Root{Pointer: nextSibling, NodeValue: nextSibling.Data}
 	}
-	p := Root{nextSibling, nextSibling.Data, nil}
+	p := Root{Pointer: nextSibling, NodeValue: nextSibling.Data}
 	return p.FindNextElementSibling()
 }
 
@@ -228,12 +251,12 @@ func (r Root) FindPrevElementSibling() Root {
 		if debug {
 			panic("No previous element sibling found")
 		}
-		return Root{nil, "", errors.New("no previous element sibling found")}
+		return Root{Error: ErrNoPreviousElementSibling}
 	}
 	if prevSibling.Type == html.ElementNode {
-		return Root{prevSibling, prevSibling.Data, nil}
+		return Root{Pointer: prevSibling, NodeValue: prevSibling.Data}
 	}
-	p := Root{prevSibling, prevSibling.Data, nil}
+	p := Root{Pointer: prevSibling, NodeValue: prevSibling.Data}
 	return p.FindPrevElementSibling()
 }
 
@@ -242,7 +265,7 @@ func (r Root) Children() []Root {
 	child := r.Pointer.FirstChild
 	var children []Root
 	for child != nil {
-		children = append(children, Root{child, child.Data, nil})
+		children = append(children, Root{Pointer: child, NodeValue: child.Data})
 		child = child.NextSibling
 	}
 	return children

@@ -1,3 +1,14 @@
+## v1.2
+
+### Added
+
+- ErrorDetails to the Root object. This will contain the templated error messages that used to be returned by Error
+
+## Changed
+
+- Error will now be one of a standard set of errors defined by the package. Details about the error message have been moved
+to the ErrorDetails property of Root.
+
 ## v1.1
 
 ### Added
