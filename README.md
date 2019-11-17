@@ -34,7 +34,17 @@ func SetDebug(bool) {} // Sets the debug mode to true or false; false by default
 `Root` is a struct, containing three fields :
 * `Pointer` containing the pointer to the current html node
 * `NodeValue` containing the current html node's value, i.e. the tag name for an ElementNode, or the text in case of a TextNode
-* `Error` containing an error if one occurrs, else `nil` is returned.
+* `Error` containing an error in a struct if one occurrs, else `nil` is returned. 
+A detailed text explaination of the error can be accessed using the `Error()` function. A field `Type` in this struct of type `ErrorType` will denote the kind of error that took place, which will consist of either of the following
+	* `ErrUnableToParse`
+	* `ErrElementNotFound`
+	* `ErrNoNextSibling`
+	* `ErrNoPreviousSibling`
+	* `ErrNoNextElementSibling`
+	* `ErrNoPreviousElementSibling`
+	* `ErrCreatingGetRequest`
+	* `ErrInGetRequest`
+	* `ErrReadingResponse`
 
 ## Installation
 Install the package using the command
