@@ -2,12 +2,7 @@
 
 ### Added
 
-- ErrorDetails to the Root object. This will contain the templated error messages that used to be returned by Error
-
-## Changed
-
-- Error will now be one of a standard set of errors defined by the package. Details about the error message have been moved
-to the ErrorDetails property of Root.
+- Error enums which can be accessed using `Root.Error.(soup.Error).Type`. Refer to `examples/errors`.
 
 ## v1.1.0
 
