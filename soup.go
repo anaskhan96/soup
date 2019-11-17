@@ -6,7 +6,6 @@ package soup
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -16,28 +15,52 @@ import (
 	"golang.org/x/net/html"
 )
 
-var (
+type ErrorType int
+
+const (
 	// ErrUnableToParse will be returned when the HTML could not be parsed
-	ErrUnableToParse = errors.New("unable to parse the HTML")
+	ErrUnableToParse ErrorType = iota
 	// ErrElementNotFound will be returned when element was not found
-	ErrElementNotFound = errors.New("element not found")
+	ErrElementNotFound
 	// ErrNoNextSibling will be returned when no next sibling can be found
-	ErrNoNextSibling = errors.New("no next sibling found")
+	ErrNoNextSibling
 	// ErrNoPreviousSibling will be returned when no previous sibling can be found
-	ErrNoPreviousSibling = errors.New("no previous sibling found")
+	ErrNoPreviousSibling
 	// ErrNoNextElementSibling will be returned when no next element sibling can be found
-	ErrNoNextElementSibling = errors.New("no next element sibling found")
+	ErrNoNextElementSibling
 	// ErrNoPreviousElementSibling will be returned when no previous element sibling can be found
-	ErrNoPreviousElementSibling = errors.New("no previous element sibling found")
+	ErrNoPreviousElementSibling
+	// ErrCreatingGetRequest will be returned when the get request couldn't be created
+	ErrCreatingGetRequest
+	// ErrInGetRequest will be returned when there was an error during the get request
+	ErrInGetRequest
+	// ErrReadingResponse will be returned if there was an error reading the response to our get request
+	ErrReadingResponse
 )
+
+// Error allows easier introspection on the type of error returned.
+// If you know you have a Error, you can compare the Type to one of the exported types
+// from this package to see what kind of error it is, then further inspect the Error() method
+// to see if it has more specific details for you, like in the case of a ErrElementNotFound
+// type of error.
+type Error struct {
+	Type ErrorType
+	msg  string
+}
+
+func (se Error) Error() string {
+	return se.msg
+}
+
+func newError(t ErrorType, msg string) Error {
+	return Error{Type: t, msg: msg}
+}
 
 // Root is a structure containing a pointer to an html node, the node value, and an error variable to return an error if one occurred
 type Root struct {
 	Pointer   *html.Node
 	NodeValue string
 	Error     error
-	// ErrorDetails will contain templated error information (if applicable) if Error != nil
-	ErrorDetails string
 }
 
 // Init a new HTTP client for use when the client doesn't want to use their own.
@@ -77,7 +100,7 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 		if debug {
 			panic("Couldn't perform GET request to " + url)
 		}
-		return "", errors.New("error creating get request to " + url)
+		return "", newError(ErrCreatingGetRequest, "error creating get request to "+url)
 	}
 	// Set headers
 	for hName, hValue := range Headers {
@@ -96,7 +119,7 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 		if debug {
 			panic("Couldn't perform GET request to " + url)
 		}
-		return "", errors.New("couldn't perform GET request to " + url)
+		return "", newError(ErrInGetRequest, "couldn't perform GET request to "+url)
 	}
 	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
@@ -104,7 +127,7 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 		if debug {
 			panic("Unable to read the response body")
 		}
-		return "", errors.New("unable to read the response body")
+		return "", newError(ErrReadingResponse, "unable to read the response body")
 	}
 	return string(bytes), nil
 }
@@ -121,7 +144,7 @@ func HTMLParse(s string) Root {
 		if debug {
 			panic("Unable to parse the HTML")
 		}
-		return Root{Error: ErrUnableToParse, ErrorDetails: err.Error()}
+		return Root{Error: newError(ErrUnableToParse, "unable to parse the HTML")}
 	}
 	for r.Type != html.ElementNode {
 		switch r.Type {
@@ -145,7 +168,7 @@ func (r Root) Find(args ...string) Root {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 		}
-		return Root{Error: ErrElementNotFound, ErrorDetails: fmt.Sprintf("element `%s` with attributes `%s` not found", args[0], strings.Join(args[1:], " "))}
+		return Root{Error: newError(ErrElementNotFound, fmt.Sprintf("element `%s` with attributes `%s` not found", args[0], strings.Join(args[1:], " ")))}
 	}
 	return Root{Pointer: temp, NodeValue: temp.Data}
 }
@@ -177,7 +200,7 @@ func (r Root) FindStrict(args ...string) Root {
 		if debug {
 			panic("Element `" + args[0] + "` with attributes `" + strings.Join(args[1:], " ") + "` not found")
 		}
-		return Root{nil, "", ErrElementNotFound, fmt.Sprintf("element `%s` with attributes `%s` not found", args[0], strings.Join(args[1:], " "))}
+		return Root{nil, "", newError(ErrElementNotFound, fmt.Sprintf("element `%s` with attributes `%s` not found", args[0], strings.Join(args[1:], " ")))}
 	}
 	return Root{Pointer: temp, NodeValue: temp.Data}
 }
@@ -207,7 +230,7 @@ func (r Root) FindNextSibling() Root {
 		if debug {
 			panic("No next sibling found")
 		}
-		return Root{Error: ErrNoNextSibling}
+		return Root{Error: newError(ErrNoNextSibling, "no next sibling found")}
 	}
 	return Root{Pointer: nextSibling, NodeValue: nextSibling.Data}
 }
@@ -221,7 +244,7 @@ func (r Root) FindPrevSibling() Root {
 			panic("No previous sibling found")
 		}
 
-		return Root{Error: ErrNoPreviousSibling}
+		return Root{Error: newError(ErrNoPreviousSibling, "no previous sibling found")}
 	}
 	return Root{Pointer: prevSibling, NodeValue: prevSibling.Data}
 }
@@ -234,7 +257,7 @@ func (r Root) FindNextElementSibling() Root {
 		if debug {
 			panic("No next element sibling found")
 		}
-		return Root{Error: ErrNoNextElementSibling}
+		return Root{Error: newError(ErrNoNextElementSibling, "no next element sibling found")}
 	}
 	if nextSibling.Type == html.ElementNode {
 		return Root{Pointer: nextSibling, NodeValue: nextSibling.Data}
@@ -251,7 +274,7 @@ func (r Root) FindPrevElementSibling() Root {
 		if debug {
 			panic("No previous element sibling found")
 		}
-		return Root{Error: ErrNoPreviousElementSibling}
+		return Root{Error: newError(ErrNoPreviousElementSibling, "no previous element sibling found")}
 	}
 	if prevSibling.Type == html.ElementNode {
 		return Root{Pointer: prevSibling, NodeValue: prevSibling.Data}
