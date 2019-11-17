@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const testHTML = `
@@ -205,10 +207,24 @@ func TestFullText(t *testing.T) {
 }
 
 func TestFullTextEmpty(t *testing.T) {
-    // <div id="5"><h1><span></span></h1></div>
-    h1 := doc.Find("div", "id", "5").Find("h1")
+	// <div id="5"><h1><span></span></h1></div>
+	h1 := doc.Find("div", "id", "5").Find("h1")
 
-    if h1.FullText() != "" {
+	if h1.FullText() != "" {
 		t.Errorf("Wrong text: %s", h1.FullText())
 	}
+}
+
+func TestNewErrorReturnsInspectableError(t *testing.T) {
+	err := newError(ErrElementNotFound, "element not found")
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrElementNotFound, err.Type)
+	assert.Equal(t, "element not found", err.Error())
+}
+
+func TestFindReturnsInspectableError(t *testing.T) {
+	r := doc.Find("bogus", "thing")
+	assert.IsType(t, Error{}, r.Error)
+	assert.Equal(t, "element `bogus` with attributes `thing` not found", r.Error.Error())
+	assert.Equal(t, ErrElementNotFound, r.Error.(Error).Type)
 }
