@@ -1,4 +1,4 @@
-## v1.2
+## v1.2.0
 
 ### Added
 
@@ -9,7 +9,7 @@
 - Error will now be one of a standard set of errors defined by the package. Details about the error message have been moved
 to the ErrorDetails property of Root.
 
-## v1.1
+## v1.1.0
 
 ### Added
 

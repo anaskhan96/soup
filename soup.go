@@ -15,6 +15,7 @@ import (
 	"golang.org/x/net/html"
 )
 
+// ErrorType defines types of errors that are possible from soup
 type ErrorType int
 
 const (
