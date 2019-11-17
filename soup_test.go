@@ -210,9 +210,6 @@ func TestFullTextEmpty(t *testing.T) {
 	// <div id="5"><h1><span></span></h1></div>
 	h1 := doc.Find("div", "id", "5").Find("h1")
 
-	if h1.Error != nil {
-		assert.Equal(t, ErrElementNotFound, h1.Error.(Error).Type)
-	}
 	if h1.FullText() != "" {
 		t.Errorf("Wrong text: %s", h1.FullText())
 	}
