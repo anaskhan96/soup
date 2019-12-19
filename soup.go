@@ -352,7 +352,7 @@ func (r Root) FullText() string {
 		if n.Type == html.TextNode {
 			buf.WriteString(n.Data)
 		}
-		if n.Type == html.ElementNode {
+		if n.Type == html.ElementNode && n.FirstChild != nil {
 			f(n.FirstChild)
 		}
 		if n.NextSibling != nil {
