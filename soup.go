@@ -6,9 +6,14 @@ package soup
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
+	netURL "net/url"
 	"regexp"
 	"strings"
 
@@ -35,6 +40,10 @@ const (
 	ErrCreatingGetRequest
 	// ErrInGetRequest will be returned when there was an error during the get request
 	ErrInGetRequest
+	// ErrCreatingPostRequest will be returned when the post request couldn't be created
+	ErrCreatingPostRequest
+	// ErrMarshallingPostRequest will be returned when the body of a post request couldn't be serialized
+	ErrMarshallingPostRequest
 	// ErrReadingResponse will be returned if there was an error reading the response to our get request
 	ErrReadingResponse
 )
@@ -99,21 +108,13 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		if debug {
-			panic("Couldn't perform GET request to " + url)
+			panic("Couldn't create GET request to " + url)
 		}
 		return "", newError(ErrCreatingGetRequest, "error creating get request to "+url)
 	}
-	// Set headers
-	for hName, hValue := range Headers {
-		req.Header.Set(hName, hValue)
-	}
-	// Set cookies
-	for cName, cValue := range Cookies {
-		req.AddCookie(&http.Cookie{
-			Name:  cName,
-			Value: cValue,
-		})
-	}
+
+	setHeadersAndCookies(req)
+
 	// Perform request
 	resp, err := client.Do(req)
 	if err != nil {
@@ -133,7 +134,102 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 	return string(bytes), nil
 }
 
-// Get returns the HTML returned by the url in string using the default HTTP client
+// setHeadersAndCookies helps build a request
+func setHeadersAndCookies(req *http.Request) {
+	// Set headers
+	for hName, hValue := range Headers {
+		req.Header.Set(hName, hValue)
+	}
+	// Set cookies
+	for cName, cValue := range Cookies {
+		req.AddCookie(&http.Cookie{
+			Name:  cName,
+			Value: cValue,
+		})
+	}
+}
+
+// getBodyReader serializes the body for a network request
+func getBodyReader(rawBody interface{}) (io.Reader, error) {
+	var bodyReader io.Reader
+
+	if rawBody != nil {
+		switch body := rawBody.(type) {
+		case *bytes.Buffer:
+		case map[string]string:
+			jsonBody, err := json.Marshal(body)
+			if err != nil {
+				if debug {
+					panic("Unable to read the response body")
+				}
+				return nil, newError(ErrMarshallingPostRequest, "couldn't serialize map of strings to JSON.")
+			}
+			bodyReader = bytes.NewBuffer(jsonBody)
+		case netURL.Values:
+			bodyReader = strings.NewReader(body.Encode())
+		case []byte: //expects JSON format
+			bodyReader = bytes.NewBuffer(body)
+		case string: //expects JSON format
+			bodyReader = strings.NewReader(body)
+		default:
+			return nil, newError(ErrMarshallingPostRequest, fmt.Sprintf("Cannot handle body type %T", rawBody))
+		}
+	}
+
+	return bodyReader, nil
+}
+
+// PostWithClient returns the HTML returned by the url using a provided HTTP client
+func PostWithClient(url string, bodyType string, body interface{}, client *http.Client) (string, error) {
+	bodyReader, err := getBodyReader(body)
+	if err != nil {
+		return "todo:", err
+	}
+
+	req, err := http.NewRequest("POST", url, bodyReader)
+	Header("Content-Type", bodyType)
+	setHeadersAndCookies(req)
+
+	if debug {
+		// Save a copy of this request for debugging.
+		requestDump, err := httputil.DumpRequest(req, true)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(requestDump))
+	}
+
+	// Perform request
+	resp, err := client.Do(req)
+
+	if err != nil {
+		if debug {
+			panic("Couldn't perform POST request to " + url)
+		}
+		return "", newError(ErrCreatingPostRequest, "couldn't perform POST request to"+url)
+	}
+	defer resp.Body.Close()
+	bytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		if debug {
+			panic("Unable to read the response body")
+		}
+		return "", newError(ErrReadingResponse, "unable to read the response body")
+	}
+	return string(bytes), nil
+}
+
+// Post returns the HTML returned by the url as a string using the default HTTP client
+func Post(url string, bodyType string, body interface{}) (string, error) {
+	return PostWithClient(url, bodyType, body, defaultClient)
+}
+
+// PostForm is a convenience method for POST requests that
+func PostForm(url string, data url.Values) (string, error) {
+	return PostWithClient(url, "application/x-www-form-urlencoded", data, defaultClient)
+}
+
+// Get returns the HTML returned by the url as a string using the default HTTP client
 func Get(url string) (string, error) {
 	return GetWithClient(url, defaultClient)
 }
