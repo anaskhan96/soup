@@ -155,7 +155,6 @@ func getBodyReader(rawBody interface{}) (io.Reader, error) {
 
 	if rawBody != nil {
 		switch body := rawBody.(type) {
-		case *bytes.Buffer:
 		case map[string]string:
 			jsonBody, err := json.Marshal(body)
 			if err != nil {
