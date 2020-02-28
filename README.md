@@ -11,10 +11,12 @@ Exported variables and functions implemented till now :
 ```go
 var Headers map[string]string // Set headers as a map of key-value pairs, an alternative to calling Header() individually
 var Cookies map[string]string // Set cookies as a map of key-value  pairs, an alternative to calling Cookie() individually
-func Get(string) (string,error){} // Takes the url as an argument, returns HTML string
-func GetWithClient(string, *http.Client){} // Takes the url and a custom HTTP client as arguments, returns HTML string
-func Header(string, string){} // Takes key,value pair to set as headers for the HTTP request made in Get()
-func Cookie(string, string){} // Takes key, value pair to set as cookies to be sent with the HTTP request in Get()
+func Get(string) (string,error) {} // Takes the url as an argument, returns HTML string
+func GetWithClient(string, *http.Client) {} // Takes the url and a custom HTTP client as arguments, returns HTML string
+func Post(string, string, interface{}) (string, error) {} // Takes the url, bodyType, and payload as an argument, returns HTML string
+func PostForm(string, url.Values) {} // Takes the url and body. bodyType is set to "application/x-www-form-urlencoded"
+func Header(string, string) {} // Takes key,value pair to set as headers for the HTTP request made in Get()
+func Cookie(string, string) {} // Takes key, value pair to set as cookies to be sent with the HTTP request in Get()
 func HTMLParse(string) Root {} // Takes the HTML string as an argument, returns a pointer to the DOM constructed
 func Find([]string) Root {} // Element tag,(attribute key-value pair) as argument, pointer to first occurence returned
 func FindAll([]string) []Root {} // Same as Find(), but pointers to all occurrences returned

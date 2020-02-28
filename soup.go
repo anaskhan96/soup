@@ -149,7 +149,7 @@ func setHeadersAndCookies(req *http.Request) {
 	}
 }
 
-// getBodyReader serializes the body for a network request
+// getBodyReader serializes the body for a network request. See the test file for examples
 func getBodyReader(rawBody interface{}) (io.Reader, error) {
 	var bodyReader io.Reader
 
@@ -180,6 +180,7 @@ func getBodyReader(rawBody interface{}) (io.Reader, error) {
 }
 
 // PostWithClient returns the HTML returned by the url using a provided HTTP client
+// The type of the body must conform to one of the types listed in func getBodyReader()
 func PostWithClient(url string, bodyType string, body interface{}, client *http.Client) (string, error) {
 	bodyReader, err := getBodyReader(body)
 	if err != nil {
