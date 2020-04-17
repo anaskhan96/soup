@@ -309,6 +309,18 @@ func (r Root) Attrs() map[string]string {
 	return getKeyValue(r.Pointer.Attr)
 }
 
+
+// HTML returns the raw HTML for the specific element you selected
+func (r Root) HTML() string {
+	var buf bytes.Buffer
+	e := html.Render(&buf, r.Pointer)
+	if e != nil {
+		return ""
+	}
+	return buf.String()
+}
+
+
 // Text returns the string inside a non-nested element
 func (r Root) Text() string {
 	k := r.Pointer.FirstChild
