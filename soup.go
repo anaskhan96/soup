@@ -226,6 +226,9 @@ func (r Root) FindAllStrict(args ...string) []Root {
 // FindNextSibling finds the next sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindNextSibling() Root {
+	if r.Pointer == nil {
+		return Root{Error: newError(ErrElementNotFound, "no pointer has found")}
+	}
 	nextSibling := r.Pointer.NextSibling
 	if nextSibling == nil {
 		if debug {
@@ -239,6 +242,9 @@ func (r Root) FindNextSibling() Root {
 // FindPrevSibling finds the previous sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindPrevSibling() Root {
+	if r.Pointer == nil {
+		return Root{Error: newError(ErrElementNotFound, "no pointer has found")}
+	}
 	prevSibling := r.Pointer.PrevSibling
 	if prevSibling == nil {
 		if debug {
@@ -253,6 +259,9 @@ func (r Root) FindPrevSibling() Root {
 // FindNextElementSibling finds the next element sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindNextElementSibling() Root {
+	if r.Pointer == nil {
+		return Root{Error: newError(ErrElementNotFound, "no pointer has found")}
+	}
 	nextSibling := r.Pointer.NextSibling
 	if nextSibling == nil {
 		if debug {
@@ -270,6 +279,9 @@ func (r Root) FindNextElementSibling() Root {
 // FindPrevElementSibling finds the previous element sibling of the pointer in the DOM
 // returning a struct with a pointer to it
 func (r Root) FindPrevElementSibling() Root {
+	if r.Pointer == nil {
+		return Root{Error: newError(ErrElementNotFound, "no pointer has found")}
+	}
 	prevSibling := r.Pointer.PrevSibling
 	if prevSibling == nil {
 		if debug {
@@ -286,6 +298,9 @@ func (r Root) FindPrevElementSibling() Root {
 
 // Children retuns all direct children of this DOME element.
 func (r Root) Children() []Root {
+	if r.Pointer == nil {
+		return []Root{}
+	}
 	child := r.Pointer.FirstChild
 	var children []Root
 	for child != nil {
@@ -297,6 +312,9 @@ func (r Root) Children() []Root {
 
 // Attrs returns a map containing all attributes
 func (r Root) Attrs() map[string]string {
+	if r.Pointer == nil {
+		return nil
+	}
 	if r.Pointer.Type != html.ElementNode {
 		if debug {
 			panic("Not an ElementNode")
@@ -311,6 +329,9 @@ func (r Root) Attrs() map[string]string {
 
 // Text returns the string inside a non-nested element
 func (r Root) Text() string {
+	if r.Pointer == nil {
+		return ""
+	}
 	k := r.Pointer.FirstChild
 checkNode:
 	if k != nil && k.Type != html.TextNode {
