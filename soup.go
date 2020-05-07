@@ -299,7 +299,7 @@ func (r Root) FindPrevElementSibling() Root {
 // Children retuns all direct children of this DOME element.
 func (r Root) Children() []Root {
 	if r.Pointer == nil {
-		return []Root{}
+		return []Root{{Error: newError(ErrElementNotFound, "no pointer has found")}}
 	}
 	child := r.Pointer.FirstChild
 	var children []Root
