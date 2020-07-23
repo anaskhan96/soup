@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"golang.org/x/net/html"
+	"golnag.org/x/net/html/charset"
 )
 
 // ErrorType defines types of errors that are possible from soup
@@ -123,7 +124,13 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 		return "", newError(ErrInGetRequest, "couldn't perform GET request to "+url)
 	}
 	defer resp.Body.Close()
-	bytes, err := ioutil.ReadAll(resp.Body)
+	
+	utf8Body, err := charset.NewReader(resp.Body, resp.Header.Get("Content-Type"))
+	if err != nil {
+		return "", err
+	}
+	
+	bytes, err := ioutil.ReadAll(utf8Body)
 	if err != nil {
 		if debug {
 			panic("Unable to read the response body")
