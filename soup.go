@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"golang.org/x/net/html"
-	"golnag.org/x/net/html/charset"
+	"golang.org/x/net/html/charset"
 )
 
 // ErrorType defines types of errors that are possible from soup
