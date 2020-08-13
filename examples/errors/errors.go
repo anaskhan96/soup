@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/anaskhan96/soup"
+	"github.com/dongzhongshu/soup"
 )
 
 func main() {
