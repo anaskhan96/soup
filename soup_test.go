@@ -1,6 +1,9 @@
 package soup
 
 import (
+	"fmt"
+	"io/ioutil"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -227,4 +230,36 @@ func TestFindReturnsInspectableError(t *testing.T) {
 	assert.IsType(t, Error{}, r.Error)
 	assert.Equal(t, "element `bogus` with attributes `thing` not found", r.Error.Error())
 	assert.Equal(t, ErrElementNotFound, r.Error.(Error).Type)
+}
+func TestRoot_Extract(t *testing.T) {
+	str, err := ioutil.ReadFile("5.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	doc := HTMLParse(string(str))
+	scripts := doc.FindAll("script")
+	for _, value := range scripts {
+		doc.Extract(value)
+	}
+	styles := doc.FindAll("style")
+	for _, value := range styles {
+		doc.Extract(value)
+	}
+	ps := doc.FindAll("p")
+	text := ""
+	for _, value := range ps {
+		rangetext := value.FullTextWithSeperator("", true)
+		if len(rangetext) == 0 {
+			continue
+		}
+		rangetext += "\n"
+		//print(rangetext)
+		//print("\n-------------------------\n")
+		text += rangetext
+		doc.Extract(value)
+	}
+	text += doc.FullTextWithSeperator("\n", true)
+	//text = strings.Join(strings.Split(text,"\n"),"\n")
+	fmt.Print(text)
+	//fmt.Println(doc.FullText())
 }

@@ -365,6 +365,38 @@ func (r Root) FullText() string {
 	return buf.String()
 }
 
+// FullText returns the string inside even a nested element
+func (r Root) FullTextWithSeperator(seperator string, strip bool) string {
+	var buf bytes.Buffer
+
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n == nil {
+			return
+		}
+		if n.Type == html.TextNode {
+			strdata := n.Data
+			if strip {
+				strdata = strings.TrimSpace(strdata)
+			}
+			if len(strdata) != 0 {
+				strdata += seperator
+				buf.WriteString(strdata)
+			}
+		}
+		if n.Type == html.ElementNode {
+			f(n.FirstChild)
+		}
+		if n.NextSibling != nil {
+			f(n.NextSibling)
+		}
+	}
+
+	f(r.Pointer.FirstChild)
+
+	return buf.String()
+}
+
 //destroy all element given node; like bs4.element --> extract
 func (r Root) Extract(node Root) {
 	if node.Pointer.Parent != nil {
