@@ -365,6 +365,13 @@ func (r Root) FullText() string {
 	return buf.String()
 }
 
+//destroy all element given node; like bs4.element --> extract
+func (r Root) Extract(node Root) {
+	if node.Pointer.Parent != nil {
+		node.Pointer.Parent.RemoveChild(node.Pointer)
+	}
+}
+
 func matchElementName(n *html.Node, name string) bool {
 	return name == "" || name == n.Data
 }
