@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/dongzhongshu/soup"
+	"github.com/anaskhan96/soup"
 )
 
 // This is a basic 'soup' example for Korean.
