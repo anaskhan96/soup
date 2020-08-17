@@ -404,7 +404,7 @@ func findAllofem(n *html.Node, args []string, strict bool) []*html.Node {
 	var f func(*html.Node, []string, bool)
 	f = func(n *html.Node, args []string, uni bool) {
 		if uni == true {
-			if matchElementName(n, args[0]) {
+			if n.Type == html.ElementNode && matchElementName(n, args[0]) {
 				if len(args) > 1 && len(args) < 4 {
 					for i := 0; i < len(n.Attr); i++ {
 						attr := n.Attr[i]
