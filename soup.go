@@ -340,6 +340,17 @@ checkNode:
 	return ""
 }
 
+// HTML returns the HTML code for the specific element
+
+func (r Root) HTML() string {
+	var buf bytes.Buffer
+	e := html.Render(&buf, r.Pointer)
+	if e != nil {
+		return ""
+	}
+	return buf.String()
+}
+
 // FullText returns the string inside even a nested element
 func (r Root) FullText() string {
 	var buf bytes.Buffer
