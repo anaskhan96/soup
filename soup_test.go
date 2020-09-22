@@ -1,7 +1,6 @@
 package soup
 
 import (
-	"reflect"
 	"strconv"
 	"strings"
 	"testing"
@@ -72,52 +71,34 @@ var multipleClasses = HTMLParse(multipleClassesHTML)
 func TestFind(t *testing.T) {
 	// Find() and Attrs()
 	actual := doc.Find("img").Attrs()["src"]
-	if !reflect.DeepEqual(actual, "images/springsource.png") {
-		t.Error("Instead of `images/springsource.png`, got", actual)
-	}
+	assert.Equal(t, "images/springsource.png", actual)
 	// Find(...) and Text()
 	actual = doc.Find("a", "href", "hello").Text()
-	if !reflect.DeepEqual(actual, "servlet") {
-		t.Error("Instead of `servlet`, got", actual)
-	}
+	assert.Equal(t, "servlet", actual)
 	// Nested Find()
 	actual = doc.Find("div").Find("div").Text()
-	if !reflect.DeepEqual(actual, "Just two divs peacing out") {
-		t.Error("Instead of `Just two divs peacing out`, got", actual)
-	}
+	assert.Equal(t, "Just two divs peacing out", actual)
 	// Find("") for any
 	actual = multipleClasses.Find("body").Find("").Text()
-	if !reflect.DeepEqual(actual, "Multiple classes") {
-		t.Error("Instead of `Multiple classes`, got", actual)
-	}
+	assert.Equal(t, "Multiple classes", actual)
 	// Find("") with attributes
 	actual = doc.Find("", "id", "4").Text()
-	if !reflect.DeepEqual(actual, "Last one") {
-		t.Error("Instead of `Last one`, got", actual)
-	}
+	assert.Equal(t, "Last one", actual)
 }
 
 func TestFindNextPrevElement(t *testing.T) {
 	// FindNextSibling() and NodeValue field
 	actual := doc.Find("div", "id", "0").FindNextSibling().NodeValue
-	if !reflect.DeepEqual(strings.TrimSpace(actual), "check") {
-		t.Error("Instead of `check`, got", actual)
-	}
+	assert.Equal(t, "check", strings.TrimSpace(actual))
 	// FindPrevSibling() and NodeValue field
 	actual = doc.Find("div", "id", "2").FindPrevSibling().NodeValue
-	if !reflect.DeepEqual(strings.TrimSpace(actual), "check") {
-		t.Error("Instead of `check`, got", actual)
-	}
+	assert.Equal(t, "check", strings.TrimSpace(actual))
 	// FindNextElementSibling() and NodeValue field
 	actual = doc.Find("table").FindNextElementSibling().NodeValue
-	if !reflect.DeepEqual(actual, "div") {
-		t.Error("Instead of `div`, got", actual)
-	}
+	assert.Equal(t, "div", strings.TrimSpace(actual))
 	// FindPrevElementSibling() and NodeValue field
 	actual = doc.Find("p").FindPrevElementSibling().NodeValue
-	if !reflect.DeepEqual(actual, "div") {
-		t.Error("Instead of `div`, got", actual)
-	}
+	assert.Equal(t, "div", strings.TrimSpace(actual))
 }
 
 func TestFindAll(t *testing.T) {
@@ -126,93 +107,60 @@ func TestFindAll(t *testing.T) {
 	for i := 0; i < len(allDivs); i++ {
 		id := allDivs[i].Attrs()["id"]
 		actual, _ := strconv.Atoi(id)
-		if !reflect.DeepEqual(actual, i) {
-			t.Error("Instead of", i, "got", actual)
-		}
+		assert.Equal(t, i, actual)
 	}
 }
 
 func TestFindAllBySingleClass(t *testing.T) {
 	actual := multipleClasses.FindAll("div", "class", "first")
-	if len(actual) != 6 {
-		t.Errorf("Expected 6 elements to be returned. Actual: %d", len(actual))
-	}
+	assert.Equal(t, 6, len(actual))
 	actual = multipleClasses.FindAll("div", "class", "third")
-	if len(actual) != 1 {
-		t.Errorf("Expected 1 element to be returned. Actual: %d", len(actual))
-	}
+	assert.Equal(t, 1, len(actual))
 }
 
 func TestFindAllByAttribute(t *testing.T) {
 	actual := doc.FindAll("", "id", "2")
-	if len(actual) != 1 {
-		t.Errorf("Expected 1 element to be returned. Actual: %d", len(actual))
-	}
+	assert.Equal(t, 1, len(actual))
 }
 
 func TestFindBySingleClass(t *testing.T) {
 	actual := multipleClasses.Find("div", "class", "first")
-	if actual.Text() != "Multiple classes" {
-		t.Errorf("Wrong element returned: %s", actual.Text())
-	}
+	assert.Equal(t, "Multiple classes", actual.Text())
 	actual = multipleClasses.Find("div", "class", "third")
-	if actual.Text() != "Multiple classes inorder" {
-		t.Errorf("Wrong element returned: %s", actual.Text())
-	}
+	assert.Equal(t, "Multiple classes inorder", actual.Text())
 }
 
 func TestFindAllStrict(t *testing.T) {
 	actual := multipleClasses.FindAllStrict("div", "class", "first second")
-	if len(actual) != 2 {
-		t.Errorf("Expected 2 elements to be returned. Actual: %d", len(actual))
-	}
+	assert.Equal(t, 2, len(actual))
 	actual = multipleClasses.FindAllStrict("div", "class", "first third second")
-	if len(actual) != 0 {
-		t.Errorf("0 elements should be returned")
-	}
-
+	assert.Equal(t, 0, len(actual))
 	actual = multipleClasses.FindAllStrict("div", "class", "second first third")
-	if len(actual) != 1 {
-		t.Errorf("Single item should be returned")
-	}
+	assert.Equal(t, 1, len(actual))
 }
 
 func TestFindStrict(t *testing.T) {
 	actual := multipleClasses.FindStrict("div", "class", "first")
-	if actual.Text() != "Single class" {
-		t.Errorf("Wrong element returned: %s", actual.Text())
-	}
-
+	assert.Equal(t, "Single class", actual.Text())
 	actual = multipleClasses.FindStrict("div", "class", "third")
-	if actual.Error == nil {
-		t.Errorf("Element with class \"third\" should not be returned in strict mode")
-	}
+	assert.NotNil(t, actual.Error)
 }
 
 func TestText(t *testing.T) {
 	// <li>To a <a href="hello.jsp">JSP page</a> right?</li>
 	li := doc.Find("ul").Find("li")
-
-	if li.Text() != "To a " {
-		t.Errorf("Wrong text: %s", li.Text())
-	}
+	assert.Equal(t, "To a ", li.Text())
 }
 func TestFullText(t *testing.T) {
 	// <li>To a <a href="hello.jsp">JSP page</a> right?</li>
 	li := doc.Find("ul").Find("li")
-
-	if li.FullText() != "To a JSP page right?" {
-		t.Errorf("Wrong text: %s", li.FullText())
-	}
+	assert.Equal(t, "To a JSP page right?", li.FullText())
 }
 
 func TestFullTextEmpty(t *testing.T) {
 	// <div id="5"><h1><span></span></h1></div>
 	h1 := doc.Find("div", "id", "5").Find("h1")
-
-	if h1.FullText() != "" {
-		t.Errorf("Wrong text: %s", h1.FullText())
-	}
+	assert.Empty(t, h1.FullText())
 }
 
 func TestNewErrorReturnsInspectableError(t *testing.T) {
