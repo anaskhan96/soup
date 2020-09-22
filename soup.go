@@ -341,11 +341,9 @@ checkNode:
 }
 
 // HTML returns the HTML code for the specific element
-
 func (r Root) HTML() string {
 	var buf bytes.Buffer
-	e := html.Render(&buf, r.Pointer)
-	if e != nil {
+	if err := html.Render(&buf, r.Pointer); err != nil {
 		return ""
 	}
 	return buf.String()

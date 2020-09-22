@@ -228,3 +228,8 @@ func TestFindReturnsInspectableError(t *testing.T) {
 	assert.Equal(t, "element `bogus` with attributes `thing` not found", r.Error.Error())
 	assert.Equal(t, ErrElementNotFound, r.Error.(Error).Type)
 }
+
+func TestHTML(t *testing.T) {
+	li := doc.Find("ul").Find("li")
+	assert.Equal(t, "<li>To a <a href=\"hello.jsp\">JSP page</a> right?</li>", li.HTML())
+}

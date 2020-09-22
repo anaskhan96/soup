@@ -29,6 +29,7 @@ func Attrs() map[string]string {} // Map returned with all the attributes of the
 func Text() string {} // Full text inside a non-nested tag returned, first half returned in a nested one
 func FullText() string {} // Full text inside a nested/non-nested tag returned
 func SetDebug(bool) {} // Sets the debug mode to true or false; false by default
+func HTML() {} // HTML returns the HTML code for the specific element
 ```
 
 `Root` is a struct, containing three fields :
