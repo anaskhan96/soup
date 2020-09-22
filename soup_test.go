@@ -285,6 +285,7 @@ func TestClient_PostForm(t *testing.T) {
 	if err != nil {
 		t.Fatalf("err: %v", err)
 	}
+}
 
 func TestHTML(t *testing.T) {
 	li := doc.Find("ul").Find("li")
