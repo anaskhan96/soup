@@ -21,7 +21,7 @@ func main() {
 		log.Fatal(err)
 	}
 	doc := soup.HTMLParse(resp)
-	grid := doc.Find("div", "class", "b_antiTopBleed b_antiSideBleed b_antiBottomBleed")
+	grid := doc.FindStrict("div", "class", "b_antiTopBleed b_antiSideBleed b_antiBottomBleed")
 	heading := grid.Find("div", "class", "wtr_titleCtrn").Find("div").Text()
 	conditions := grid.Find("div", "class", "wtr_condition")
 	primaryCondition := conditions.Find("div")
