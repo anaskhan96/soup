@@ -125,7 +125,11 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 		return "", newError(ErrInGetRequest, "couldn't perform GET request to "+url)
 	}
 	defer resp.Body.Close()
-	bytes, err := ioutil.ReadAll(resp.Body)
+	utf8Body, err := charset.NewReader(resp.Body, resp.Header.Get("Content-Type"))
+	if err != nil {
+		return "", err
+	}
+	bytes, err := ioutil.ReadAll(utf8Body)
 	if err != nil {
 		if debug {
 			panic("Unable to read the response body")
@@ -210,12 +214,7 @@ func PostWithClient(url string, bodyType string, body interface{}, client *http.
 		return "", newError(ErrCreatingPostRequest, "couldn't perform POST request to"+url)
 	}
 	defer resp.Body.Close()
-	
-	utf8Body, err := charset.NewReader(resp.Body, resp.Header.Get("Content-Type"))
-	if err != nil {
-		return "", err
-	}
-	bytes, err := ioutil.ReadAll(utf8Body)
+	bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		if debug {
 			panic("Unable to read the response body")
