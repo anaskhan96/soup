@@ -129,7 +129,6 @@ func GetWithClient(url string, client *http.Client) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
 	bytes, err := ioutil.ReadAll(utf8Body)
 	if err != nil {
 		if debug {
