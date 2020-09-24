@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/charset"
 )
 
 // ErrorType defines types of errors that are possible from soup
@@ -209,7 +210,12 @@ func PostWithClient(url string, bodyType string, body interface{}, client *http.
 		return "", newError(ErrCreatingPostRequest, "couldn't perform POST request to"+url)
 	}
 	defer resp.Body.Close()
-	bytes, err := ioutil.ReadAll(resp.Body)
+	
+	utf8Body, err := charset.NewReader(resp.Body, resp.Header.Get("Content-Type"))
+	if err != nil {
+		return "", err
+	}
+	bytes, err := ioutil.ReadAll(utf8Body)
 	if err != nil {
 		if debug {
 			panic("Unable to read the response body")
