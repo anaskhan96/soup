@@ -211,7 +211,7 @@ func PostWithClient(url string, bodyType string, body interface{}, client *http.
 		if debug {
 			panic("Couldn't perform POST request to " + url)
 		}
-		return "", newError(ErrCreatingPostRequest, "couldn't perform POST request to"+url)
+		return "", newError(ErrCreatingPostRequest, "couldn't perform POST request to "+url)
 	}
 	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
