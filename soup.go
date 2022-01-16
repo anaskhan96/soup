@@ -191,7 +191,7 @@ func PostWithClient(url string, bodyType string, body interface{}, client *http.
 		return "todo:", err
 	}
 
-	req, err := http.NewRequest("POST", url, bodyReader)
+	req, _ := http.NewRequest("POST", url, bodyReader)
 	Header("Content-Type", bodyType)
 	setHeadersAndCookies(req)
 
