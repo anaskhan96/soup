@@ -385,7 +385,7 @@ func (r Root) FindPrevElementSibling() Root {
 	return p.FindPrevElementSibling()
 }
 
-// Children retuns all direct children of this DOME element.
+// Children returns all direct children of this DOME element.
 func (r Root) Children() []Root {
 	child := r.Pointer.FirstChild
 	var children []Root
