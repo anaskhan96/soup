@@ -2,6 +2,7 @@ package soup
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -89,6 +90,13 @@ func TestFind(t *testing.T) {
 	// Find("") with attributes
 	actual = doc.Find("", "id", "4").Text()
 	assert.Equal(t, "Last one", actual)
+}
+
+func TestFindOnceReturnsNil(t *testing.T) {
+	// FindOnce()
+	tag := "some tag"
+	actual := doc.Find(tag)
+	assert.Equal(t, fmt.Sprintf("element `%s` with attributes `%s` not found", tag, ""), actual.Error.Error())
 }
 
 func TestFindNextPrevElement(t *testing.T) {
@@ -290,5 +298,4 @@ func TestClient_PostForm(t *testing.T) {
 func TestHTML(t *testing.T) {
 	li := doc.Find("ul").Find("li")
 	assert.Equal(t, "<li>To a <a href=\"hello.jsp\">JSP page</a> right?</li>", li.HTML())
-
 }
