@@ -481,6 +481,9 @@ func matchElementName(n *html.Node, name string) bool {
 
 // Using depth first search to find the first occurrence and return
 func findOnce(n *html.Node, args []string, uni bool, strict bool) (*html.Node, bool) {
+	if n == nil {
+		return nil, false
+	}
 	if uni == true {
 		if n.Type == html.ElementNode && matchElementName(n, args[0]) {
 			if len(args) > 1 && len(args) < 4 {
@@ -510,6 +513,9 @@ func findOnce(n *html.Node, args []string, uni bool, strict bool) (*html.Node, b
 
 // Using depth first search to find all occurrences and return
 func findAllofem(n *html.Node, args []string, strict bool) []*html.Node {
+	if n == nil {
+		return nil
+	}
 	var nodeLinks = make([]*html.Node, 0, 10)
 	var f func(*html.Node, []string, bool)
 	f = func(n *html.Node, args []string, uni bool) {
