@@ -13,7 +13,7 @@ import (
 // 이 예제는 백준 코딩 테스트의 쉬운 문제입니다.
 
 func main() {
-	url := fmt.Sprintf("https://www.acmicpc.net/problem/1000")
+	url := "https://www.acmicpc.net/problem/1000"
 	// url의 마지막 숫자에 1000이외에 다른 숫자를 추가시키면,
 	// 다른 문제가 등장합니다.
 
