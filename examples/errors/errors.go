@@ -15,7 +15,7 @@ func main() {
 		// Handle as required!
 	}
 
-	url := fmt.Sprintf("https://xkcd.com/50")
+	url := "https://xkcd.com/50"
 	xkcd, err := soup.Get(url)
 	if err != nil {
 		// Handle it
