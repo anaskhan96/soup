@@ -412,6 +412,14 @@ func (r Root) Attrs() map[string]string {
 
 // Text returns the string inside a non-nested element
 func (r Root) Text() string {
+	if r.Pointer == nil {
+		if debug {
+			panic("Pointer text node is nil")
+		}
+
+		return ""
+	}
+
 	k := r.Pointer.FirstChild
 checkNode:
 	if k != nil && k.Type != html.TextNode {
