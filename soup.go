@@ -398,6 +398,10 @@ func (r Root) Children() []Root {
 
 // Attrs returns a map containing all attributes
 func (r Root) Attrs() map[string]string {
+	if r.Pointer == nil {
+		return nil
+	}
+
 	if r.Pointer.Type != html.ElementNode {
 		if debug {
 			panic("Not an ElementNode")
@@ -451,7 +455,12 @@ checkNode:
 
 // HTML returns the HTML code for the specific element
 func (r Root) HTML() string {
+	if r.Pointer == nil {
+		return ""
+	}
+
 	var buf bytes.Buffer
+
 	if err := html.Render(&buf, r.Pointer); err != nil {
 		return ""
 	}
