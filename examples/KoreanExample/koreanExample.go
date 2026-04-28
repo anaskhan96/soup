@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/anaskhan96/soup"
+	"github.com/Dharmey747/soupnilfix"
 )
 
 // This is a basic 'soup' example for Korean.
