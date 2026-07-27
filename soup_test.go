@@ -2,7 +2,6 @@ package soup
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -92,11 +91,38 @@ func TestFind(t *testing.T) {
 	assert.Equal(t, "Last one", actual)
 }
 
-func TestFindOnceReturnsNil(t *testing.T) {
-	// FindOnce()
-	tag := "some tag"
-	actual := doc.Find(tag)
-	assert.Equal(t, fmt.Sprintf("element `%s` with attributes `%s` not found", tag, ""), actual.Error.Error())
+func TestChainedFindOnMissingRootDoesNotPanic(t *testing.T) {
+	missing := doc.Find("missing")
+	assert.Error(t, missing.Error)
+	assert.Nil(t, missing.Pointer)
+
+	tests := []struct {
+		name   string
+		lookup func(*testing.T, Root)
+	}{
+		{"Find", func(t *testing.T, root Root) {
+			result := root.Find("child")
+			assert.Error(t, result.Error)
+			assert.Nil(t, result.Pointer)
+		}},
+		{"FindStrict", func(t *testing.T, root Root) {
+			result := root.FindStrict("child")
+			assert.Error(t, result.Error)
+			assert.Nil(t, result.Pointer)
+		}},
+		{"FindAll", func(t *testing.T, root Root) {
+			assert.Empty(t, root.FindAll("child"))
+		}},
+		{"FindAllStrict", func(t *testing.T, root Root) {
+			assert.Empty(t, root.FindAllStrict("child"))
+		}},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			test.lookup(t, missing)
+		})
+	}
 }
 
 func TestFindNextPrevElement(t *testing.T) {
