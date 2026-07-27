@@ -1,3 +1,13 @@
+## v2.0.1 - 2026-07-27
+
+### Fixed
+
+- Prevented chained `Find`, `FindStrict`, `FindAll`, and `FindAllStrict` calls from panicking when the root element is missing.
+
+### Changed
+
+- Removed a duplicate `net/url` import.
+
 ## v2.0.0 - 2026-07-27
 
 ### Changed
