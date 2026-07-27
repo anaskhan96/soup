@@ -91,6 +91,40 @@ func TestFind(t *testing.T) {
 	assert.Equal(t, "Last one", actual)
 }
 
+func TestChainedFindOnMissingRootDoesNotPanic(t *testing.T) {
+	missing := doc.Find("missing")
+	assert.Error(t, missing.Error)
+	assert.Nil(t, missing.Pointer)
+
+	tests := []struct {
+		name   string
+		lookup func(*testing.T, Root)
+	}{
+		{"Find", func(t *testing.T, root Root) {
+			result := root.Find("child")
+			assert.Error(t, result.Error)
+			assert.Nil(t, result.Pointer)
+		}},
+		{"FindStrict", func(t *testing.T, root Root) {
+			result := root.FindStrict("child")
+			assert.Error(t, result.Error)
+			assert.Nil(t, result.Pointer)
+		}},
+		{"FindAll", func(t *testing.T, root Root) {
+			assert.Empty(t, root.FindAll("child"))
+		}},
+		{"FindAllStrict", func(t *testing.T, root Root) {
+			assert.Empty(t, root.FindAllStrict("child"))
+		}},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			test.lookup(t, missing)
+		})
+	}
+}
+
 func TestFindNextPrevElement(t *testing.T) {
 	// FindNextSibling() and NodeValue field
 	actual := doc.Find("div", "id", "0").FindNextSibling().NodeValue
@@ -290,5 +324,4 @@ func TestClient_PostForm(t *testing.T) {
 func TestHTML(t *testing.T) {
 	li := doc.Find("ul").Find("li")
 	assert.Equal(t, "<li>To a <a href=\"hello.jsp\">JSP page</a> right?</li>", li.HTML())
-
 }
