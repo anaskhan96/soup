@@ -12,7 +12,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
-	"net/url"
 	netURL "net/url"
 	"regexp"
 	"strings"
@@ -230,7 +229,7 @@ func Post(url string, bodyType string, body interface{}) (string, error) {
 }
 
 // PostForm is a convenience method for POST requests that
-func PostForm(url string, data url.Values) (string, error) {
+func PostForm(url string, data netURL.Values) (string, error) {
 	return PostWithClient(url, "application/x-www-form-urlencoded", data, defaultClient)
 }
 
