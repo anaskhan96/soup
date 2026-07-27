@@ -1,3 +1,15 @@
+## v2.0.0 - 2026-07-27
+
+### Changed
+
+- Go 1.26.5 or newer is now required.
+- Upgraded `golang.org/x/net` to v0.56.0 and `golang.org/x/text` to v0.39.0.
+- Replaced Travis CI with GitHub Actions running tests and a verbose, pinned `govulncheck` scan.
+
+### Security
+
+- Updated the Go toolchain and dependencies to resolve all findings reported by `govulncheck`.
+
 ## v1.2.0
 
 ### Added
