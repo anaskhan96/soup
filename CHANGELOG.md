@@ -1,3 +1,9 @@
+## v2.0.2 - 2026-08-01
+
+### Security
+
+- Upgraded `gopkg.in/yaml.v3` to v3.0.1 to address CVE-2022-28948, a denial-of-service vulnerability.
+
 ## v2.0.1 - 2026-07-27
 
 ### Fixed
