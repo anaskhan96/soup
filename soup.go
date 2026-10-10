@@ -191,8 +191,8 @@ func PostWithClient(url string, bodyType string, body interface{}, client *http.
 	}
 
 	req, _ := http.NewRequest("POST", url, bodyReader)
-	Header("Content-Type", bodyType)
 	setHeadersAndCookies(req)
+	req.Header.Set("Content-Type", bodyType)
 
 	if debug {
 		// Save a copy of this request for debugging.
