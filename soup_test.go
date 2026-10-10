@@ -270,6 +270,22 @@ func TestClient_Post(t *testing.T) {
 	}
 }
 
+func TestPostInvalidURL(t *testing.T) {
+	for _, target := range []string{"://invalid", "http://example.com/%zz", "http://example.com/\n"} {
+		t.Run(target, func(t *testing.T) {
+			assert.NotPanics(t, func() {
+				body, err := PostWithClient(target, "application/json", "{}", &http.Client{})
+				assert.Empty(t, body)
+				if assert.Error(t, err) {
+					if soupErr, ok := err.(Error); assert.True(t, ok) {
+						assert.Equal(t, ErrCreatingPostRequest, soupErr.Type)
+					}
+				}
+			})
+		})
+	}
+}
+
 // Similar test: https://github.com/hashicorp/go-retryablehttp/blob/add-circleci/client_test.go#L631
 func TestClient_PostForm(t *testing.T) {
 	// Mock server which always responds 200.

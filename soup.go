@@ -190,7 +190,13 @@ func PostWithClient(url string, bodyType string, body interface{}, client *http.
 		return "todo:", err
 	}
 
-	req, _ := http.NewRequest("POST", url, bodyReader)
+	req, err := http.NewRequest("POST", url, bodyReader)
+	if err != nil {
+		if debug {
+			panic("Couldn't create POST request to " + url)
+		}
+		return "", newError(ErrCreatingPostRequest, "error creating post request to "+url)
+	}
 	Header("Content-Type", bodyType)
 	setHeadersAndCookies(req)
 
