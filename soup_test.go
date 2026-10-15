@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -284,6 +285,40 @@ func TestPostInvalidURL(t *testing.T) {
 			})
 		})
 	}
+}
+
+func TestPostContentTypeIsRequestLocal(t *testing.T) {
+	oldHeaders := Headers
+	Headers = map[string]string{"Content-Type": "text/plain", "X-Custom": "preserved"}
+	defer func() { Headers = oldHeaders }()
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "preserved", r.Header.Get("X-Custom"))
+		_, _ = w.Write([]byte(r.Header.Get("Content-Type")))
+	}))
+	defer ts.Close()
+
+	body, err := PostWithClient(ts.URL, "application/json", "{}", ts.Client())
+	assert.NoError(t, err)
+	assert.Equal(t, "application/json", body)
+	assert.Equal(t, "text/plain", Headers["Content-Type"])
+	body, err = GetWithClient(ts.URL, ts.Client())
+	assert.NoError(t, err)
+	assert.Equal(t, "text/plain", body)
+
+	var wg sync.WaitGroup
+	for _, contentType := range []string{"application/json", "application/x-www-form-urlencoded"} {
+		wg.Add(1)
+		go func(contentType string) {
+			defer wg.Done()
+			for i := 0; i < 10; i++ {
+				body, err := PostWithClient(ts.URL, contentType, "", ts.Client())
+				assert.NoError(t, err)
+				assert.Equal(t, contentType, body)
+			}
+		}(contentType)
+	}
+	wg.Wait()
+	assert.Equal(t, "text/plain", Headers["Content-Type"])
 }
 
 // Similar test: https://github.com/hashicorp/go-retryablehttp/blob/add-circleci/client_test.go#L631

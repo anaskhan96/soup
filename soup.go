@@ -197,8 +197,8 @@ func PostWithClient(url string, bodyType string, body interface{}, client *http.
 		}
 		return "", newError(ErrCreatingPostRequest, "error creating post request to "+url)
 	}
-	Header("Content-Type", bodyType)
 	setHeadersAndCookies(req)
+	req.Header.Set("Content-Type", bodyType)
 
 	if debug {
 		// Save a copy of this request for debugging.
