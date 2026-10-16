@@ -271,6 +271,22 @@ func TestClient_Post(t *testing.T) {
 	}
 }
 
+func TestPostInvalidURL(t *testing.T) {
+	for _, target := range []string{"://invalid", "http://example.com/%zz", "http://example.com/\n"} {
+		t.Run(target, func(t *testing.T) {
+			assert.NotPanics(t, func() {
+				body, err := PostWithClient(target, "application/json", "{}", &http.Client{})
+				assert.Empty(t, body)
+				if assert.Error(t, err) {
+					if soupErr, ok := err.(Error); assert.True(t, ok) {
+						assert.Equal(t, ErrCreatingPostRequest, soupErr.Type)
+					}
+				}
+			})
+		})
+	}
+}
+
 func TestPostContentTypeIsRequestLocal(t *testing.T) {
 	oldHeaders := Headers
 	Headers = map[string]string{"Content-Type": "text/plain", "X-Custom": "preserved"}
