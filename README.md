@@ -56,7 +56,7 @@ go get github.com/anaskhan96/soup
 ## Example
 An example code is given below to scrape the "Comics I Enjoy" part (text and its links) from [xkcd](https://xkcd.com).
 
-[More Examples](https://github.com/anaskhan96/soup/tree/master/examples)
+[More Examples](https://github.com/anaskhan96/soup/tree/main/examples)
 ```go
 package main
 
